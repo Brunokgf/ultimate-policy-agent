@@ -13,6 +13,8 @@ import Printers from "./pages/Printers";
 import Office from "./pages/Office";
 import Accessories from "./pages/Accessories";
 import Games from "./pages/Games";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +37,8 @@ const App = () => (
               <Route path="/escritorio" element={<Office />} />
               <Route path="/acessorios" element={<Accessories />} />
               <Route path="/games" element={<Games />} />
+              <Route path="/produto/:id" element={<ProductDetail />} />
+              <Route path="/carrinho" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

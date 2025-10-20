@@ -1,24 +1,20 @@
-import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/CartContext';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
+  id: string;
   nome: string;
   descricao: string;
   preco: number;
-  imagem?: string;
 }
 
-export const ProductCard = ({ nome, descricao, preco }: ProductCardProps) => {
-  const { addToCart } = useCart();
-
-  const handleAddToCart = () => {
-    addToCart(nome, preco);
-    toast.success(`${nome} adicionado ao carrinho!`);
-  };
+export const ProductCard = ({ id, nome, descricao, preco }: ProductCardProps) => {
+  const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all hover:-translate-y-1">
+    <div 
+      onClick={() => navigate(`/produto/${id}`)}
+      className="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
+    >
       <div className="aspect-square bg-muted rounded mb-3 flex items-center justify-center">
         <span className="text-4xl">📦</span>
       </div>
@@ -27,12 +23,9 @@ export const ProductCard = ({ nome, descricao, preco }: ProductCardProps) => {
       <p className="text-lg font-bold text-[#1e90ff] mb-3">
         R$ {preco.toFixed(2).replace('.', ',')}
       </p>
-      <Button 
-        onClick={handleAddToCart}
-        className="w-full bg-[#1e90ff] hover:bg-[#0a65c0]"
-      >
-        Adicionar ao Carrinho
-      </Button>
+      <div className="text-center text-sm text-muted-foreground">
+        Clique para ver detalhes →
+      </div>
     </div>
   );
 };

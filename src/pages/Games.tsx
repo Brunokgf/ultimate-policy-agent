@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Navigation } from '@/components/Navigation';
 import { ProductCard } from '@/components/ProductCard';
@@ -8,22 +8,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-
-const products = [
-  { nome: 'PlayStation 5', descricao: 'Console + 1 controle', preco: 3999.00 },
-  { nome: 'Xbox Series X', descricao: '1TB SSD', preco: 3799.00 },
-  { nome: 'Nintendo Switch OLED', descricao: 'Tela OLED 7"', preco: 2499.00 },
-  { nome: 'God of War Ragnarök', descricao: 'PS5, mídia física', preco: 299.00 },
-  { nome: 'FIFA 24', descricao: 'Xbox Series X|S', preco: 299.00 },
-  { nome: 'The Legend of Zelda: Tears', descricao: 'Nintendo Switch', preco: 349.00 },
-  { nome: 'Controle Xbox Wireless', descricao: 'Preto carbon', preco: 449.00 },
-  { nome: 'Headset Gamer Razer Kraken', descricao: '7.1 surround', preco: 599.00 },
-];
+import { getProductsByCategory } from '@/data/products';
 
 export default function Games() {
   const { user } = useAuth();
   const { cart } = useCart();
+  const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const products = getProductsByCategory('games');
 
   if (!user) {
     return <Navigate to="/" />;
@@ -38,7 +30,7 @@ export default function Games() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold">Games & Consoles</h2>
           <Button
-            onClick={() => setIsCartOpen(!isCartOpen)}
+            onClick={() => navigate('/carrinho')}
             className="bg-[#1e90ff] hover:bg-[#0a65c0] relative"
           >
             <ShoppingCart className="w-5 h-5 mr-2" />
@@ -52,8 +44,8 @@ export default function Games() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product, index) => (
-            <ProductCard key={index} {...product} />
+          {products.map((product) => (
+            <ProductCard key={product.id} {...product} />
           ))}
         </div>
       </div>
