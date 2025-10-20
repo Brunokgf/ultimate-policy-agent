@@ -64,24 +64,32 @@ export default function ProductDetail() {
         </Button>
 
         <div className="grid md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg p-8">
-          <div>
-            <div className="aspect-square bg-muted rounded-lg flex items-center justify-center mb-4">
-              <span className="text-9xl">{product.imagens[selectedImage]}</span>
-            </div>
-            <div className="flex gap-2 justify-center">
-              {product.imagens.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`w-20 h-20 rounded-lg flex items-center justify-center border-2 transition ${
-                    selectedImage === index ? 'border-[#1e90ff] bg-blue-50' : 'border-gray-200'
-                  }`}
-                >
-                  <span className="text-3xl">{img}</span>
-                </button>
-              ))}
-            </div>
+        <div>
+          <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
+            <img 
+              src={product.imagens[selectedImage]} 
+              alt={product.nome}
+              className="w-full h-full object-cover"
+            />
           </div>
+          <div className="flex gap-2 justify-center">
+            {product.imagens.map((img, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImage(index)}
+                className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition ${
+                  selectedImage === index ? 'border-[#1e90ff] bg-blue-50' : 'border-gray-200'
+                }`}
+              >
+                <img 
+                  src={img} 
+                  alt={`${product.nome} ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
 
           <div>
             <h1 className="text-3xl font-bold mb-4">{product.nome}</h1>
