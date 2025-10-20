@@ -16,8 +16,12 @@ export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCard
       onClick={() => navigate(`/produto/${id}`)}
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
     >
-      <div className="aspect-square bg-muted rounded mb-3 flex items-center justify-center">
-        <span className="text-6xl">{imagens[0]}</span>
+      <div className="aspect-square bg-muted rounded mb-3 overflow-hidden">
+        <img 
+          src={imagens[0]} 
+          alt={nome}
+          className="w-full h-full object-cover"
+        />
       </div>
       <h3 className="font-semibold text-base mb-2 line-clamp-2">{nome}</h3>
       <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{descricao}</p>

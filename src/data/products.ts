@@ -1,3 +1,26 @@
+// Import product images
+import headphonesAirpods from '@/assets/products/headphones-airpods.jpg';
+import headphonesSony from '@/assets/products/headphones-sony.jpg';
+import headphonesGaming from '@/assets/products/headphones-gaming.jpg';
+import laptopMacbook from '@/assets/products/laptop-macbook.jpg';
+import laptopGaming from '@/assets/products/laptop-gaming.jpg';
+import laptopBusiness from '@/assets/products/laptop-business.jpg';
+import printerInkjet from '@/assets/products/printer-inkjet.jpg';
+import printerLaser from '@/assets/products/printer-laser.jpg';
+import consolePS5 from '@/assets/products/console-ps5.jpg';
+import consoleXbox from '@/assets/products/console-xbox.jpg';
+import consoleSwitch from '@/assets/products/console-switch.jpg';
+import officeChair from '@/assets/products/office-chair.jpg';
+import gamingChair from '@/assets/products/gaming-chair.jpg';
+import monitorProfessional from '@/assets/products/monitor-professional.jpg';
+import keyboardMechanical from '@/assets/products/keyboard-mechanical.jpg';
+import mouseGaming from '@/assets/products/mouse-gaming.jpg';
+import accessoryPowerbank from '@/assets/products/accessory-powerbank.jpg';
+import accessoryCable from '@/assets/products/accessory-cable.jpg';
+import accessoryPhoneCase from '@/assets/products/accessory-phone-case.jpg';
+import phoneIphone from '@/assets/products/phone-iphone.jpg';
+import phoneSamsung from '@/assets/products/phone-samsung.jpg';
+
 export interface Product {
   id: string;
   nome: string;
@@ -9,9 +32,121 @@ export interface Product {
   especificacoes?: string[];
 }
 
+// Helper function to get images by category
+const getProductImages = (categoria: string, productName: string): string[] => {
+  // Telefones
+  if (categoria === 'telefones') {
+    if (productName.toLowerCase().includes('iphone') || productName.toLowerCase().includes('apple')) {
+      return [phoneIphone, phoneIphone, phoneIphone];
+    }
+    return [phoneSamsung, phoneSamsung, phoneSamsung];
+  }
+  
+  // Fones de ouvido
+  if (categoria === 'fones') {
+    if (productName.toLowerCase().includes('airpods') || productName.toLowerCase().includes('apple')) {
+      return [headphonesAirpods, headphonesAirpods, headphonesAirpods];
+    }
+    if (productName.toLowerCase().includes('gamer') || productName.toLowerCase().includes('gaming') || 
+        productName.toLowerCase().includes('headset') || productName.toLowerCase().includes('rgb')) {
+      return [headphonesGaming, headphonesGaming, headphonesGaming];
+    }
+    return [headphonesSony, headphonesSony, headphonesSony];
+  }
+  
+  // Computadores
+  if (categoria === 'computadores') {
+    if (productName.toLowerCase().includes('macbook') || productName.toLowerCase().includes('apple')) {
+      return [laptopMacbook, laptopMacbook, laptopMacbook];
+    }
+    if (productName.toLowerCase().includes('gam') || productName.toLowerCase().includes('legion') || 
+        productName.toLowerCase().includes('nitro') || productName.toLowerCase().includes('tuf') ||
+        productName.toLowerCase().includes('predator') || productName.toLowerCase().includes('rog')) {
+      return [laptopGaming, laptopGaming, laptopGaming];
+    }
+    return [laptopBusiness, laptopBusiness, laptopBusiness];
+  }
+  
+  // Impressoras
+  if (categoria === 'impressoras') {
+    if (productName.toLowerCase().includes('laser')) {
+      return [printerLaser, printerLaser, printerLaser];
+    }
+    return [printerInkjet, printerInkjet, printerInkjet];
+  }
+  
+  // Games
+  if (categoria === 'games') {
+    if (productName.toLowerCase().includes('playstation') || productName.toLowerCase().includes('ps5') || 
+        productName.toLowerCase().includes('ps4') || productName.toLowerCase().includes('dualsense')) {
+      return [consolePS5, consolePS5, consolePS5];
+    }
+    if (productName.toLowerCase().includes('xbox') || productName.toLowerCase().includes('series')) {
+      return [consoleXbox, consoleXbox, consoleXbox];
+    }
+    if (productName.toLowerCase().includes('switch') || productName.toLowerCase().includes('nintendo') ||
+        productName.toLowerCase().includes('joy-con')) {
+      return [consoleSwitch, consoleSwitch, consoleSwitch];
+    }
+    // For peripherals and accessories, use appropriate images
+    if (productName.toLowerCase().includes('cadeira') || productName.toLowerCase().includes('chair')) {
+      return [gamingChair, gamingChair, gamingChair];
+    }
+    if (productName.toLowerCase().includes('teclado') || productName.toLowerCase().includes('keyboard')) {
+      return [keyboardMechanical, keyboardMechanical, keyboardMechanical];
+    }
+    if (productName.toLowerCase().includes('mouse')) {
+      return [mouseGaming, mouseGaming, mouseGaming];
+    }
+    if (productName.toLowerCase().includes('monitor')) {
+      return [monitorProfessional, monitorProfessional, monitorProfessional];
+    }
+    return [consolePS5, consolePS5, consolePS5]; // Default to PS5 for games
+  }
+  
+  // Escritório
+  if (categoria === 'escritorio') {
+    if (productName.toLowerCase().includes('cadeira') || productName.toLowerCase().includes('chair')) {
+      if (productName.toLowerCase().includes('gam')) {
+        return [gamingChair, gamingChair, gamingChair];
+      }
+      return [officeChair, officeChair, officeChair];
+    }
+    if (productName.toLowerCase().includes('monitor')) {
+      return [monitorProfessional, monitorProfessional, monitorProfessional];
+    }
+    if (productName.toLowerCase().includes('teclado') || productName.toLowerCase().includes('keyboard')) {
+      return [keyboardMechanical, keyboardMechanical, keyboardMechanical];
+    }
+    if (productName.toLowerCase().includes('mouse')) {
+      return [mouseGaming, mouseGaming, mouseGaming];
+    }
+    return [officeChair, officeChair, officeChair];
+  }
+  
+  // Acessórios
+  if (categoria === 'acessorios') {
+    if (productName.toLowerCase().includes('powerbank') || productName.toLowerCase().includes('bateria')) {
+      return [accessoryPowerbank, accessoryPowerbank, accessoryPowerbank];
+    }
+    if (productName.toLowerCase().includes('cabo') || productName.toLowerCase().includes('cable') ||
+        productName.toLowerCase().includes('carregador') || productName.toLowerCase().includes('usb')) {
+      return [accessoryCable, accessoryCable, accessoryCable];
+    }
+    if (productName.toLowerCase().includes('capa') || productName.toLowerCase().includes('case') ||
+        productName.toLowerCase().includes('película')) {
+      return [accessoryPhoneCase, accessoryPhoneCase, accessoryPhoneCase];
+    }
+    return [accessoryCable, accessoryCable, accessoryCable];
+  }
+  
+  // Default
+  return [laptopBusiness, laptopBusiness, laptopBusiness];
+};
+
 export const allProducts: Product[] = [
   // Telefones - 40 produtos dos mais vendidos
-  { id: 'tel-1', nome: 'iPhone 15 Pro Max', descricao: '256GB, Titânio Natural', preco: 9499.00, categoria: 'telefones', imagens: ['📱', '📱', '📱'], detalhes: 'O mais avançado iPhone com chip A17 Pro, câmera de 48MP e tela Super Retina XDR de 6.7"', especificacoes: ['256GB', 'Titânio Natural', 'Chip A17 Pro', 'Câmera 48MP'] },
+  { id: 'tel-1', nome: 'iPhone 15 Pro Max', descricao: '256GB, Titânio Natural', preco: 9499.00, categoria: 'telefones', imagens: getProductImages('telefones', 'iPhone 15 Pro Max'), detalhes: 'O mais avançado iPhone com chip A17 Pro, câmera de 48MP e tela Super Retina XDR de 6.7"', especificacoes: ['256GB', 'Titânio Natural', 'Chip A17 Pro', 'Câmera 48MP'] },
   { id: 'tel-2', nome: 'Samsung Galaxy S24 Ultra', descricao: '512GB, Preto', preco: 7999.00, categoria: 'telefones', imagens: ['📱', '📱', '📱'], detalhes: 'Tela Dynamic AMOLED 2X de 6.8", S Pen integrada, câmera de 200MP', especificacoes: ['512GB', 'Preto', 'Snapdragon 8 Gen 3', 'Câmera 200MP'] },
   { id: 'tel-3', nome: 'Xiaomi Redmi Note 13 Pro', descricao: '256GB, Azul', preco: 1899.00, categoria: 'telefones', imagens: ['📱', '📱', '📱'], detalhes: 'Best-seller Xiaomi com câmera de 200MP e carregamento 67W', especificacoes: ['256GB', 'Snapdragon 7s Gen 2', '200MP', '67W'] },
   { id: 'tel-4', nome: 'iPhone 14', descricao: '128GB, Roxo', preco: 5499.00, categoria: 'telefones', imagens: ['📱', '📱', '📱'], detalhes: 'Chip A15 Bionic, câmera dupla de 12MP, resistência à água', especificacoes: ['128GB', 'Roxo', 'Chip A15', 'Câmera Dupla 12MP'] },
@@ -305,10 +440,16 @@ export const allProducts: Product[] = [
   { id: 'game-40', nome: 'Cartão PSN R$100', descricao: 'PlayStation Store', preco: 100.00, categoria: 'games', imagens: ['🎮', '🎮', '🎮'], detalhes: 'Recarga PSN mais vendida', especificacoes: ['R$ 100', 'Digital', 'PSN', 'Código online'] },
 ];
 
+// Apply correct images to all products
+const productsWithImages = allProducts.map(product => ({
+  ...product,
+  imagens: getProductImages(product.categoria, product.nome)
+}));
+
 export const getProductsByCategory = (category: string): Product[] => {
-  return allProducts.filter(p => p.categoria === category).sort((a, b) => a.preco - b.preco);
+  return productsWithImages.filter(p => p.categoria === category).sort((a, b) => a.preco - b.preco);
 };
 
 export const getProductById = (id: string): Product | undefined => {
-  return allProducts.find(p => p.id === id);
+  return productsWithImages.find(p => p.id === id);
 };
