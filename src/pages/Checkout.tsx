@@ -281,9 +281,11 @@ export default function Checkout() {
             <input type="hidden" name="_template" value="table" />
             
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold mb-4">Dados Pessoais</h2>
-                <div className="space-y-4">
+              {/* Coluna Esquerda - Dados Pessoais e Endereço */}
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-xl font-bold mb-4">Dados Pessoais</h2>
+                  <div className="space-y-4">
                   <div>
                     <Label htmlFor="nome">Nome Completo *</Label>
                     <Input
@@ -325,9 +327,11 @@ export default function Checkout() {
                       required
                     />
                   </div>
+                  </div>
                 </div>
 
-                <h2 className="text-xl font-bold mt-6 mb-4">Endereço de Entrega</h2>
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-xl font-bold mb-4">Endereço de Entrega</h2>
                 <div className="space-y-4">
                   <div className="flex gap-2">
                     <div className="flex-1">
@@ -398,10 +402,12 @@ export default function Checkout() {
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
 
-              <div>
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              {/* Coluna Direita - Pagamento e Resumo */}
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg shadow-md p-6">
                   <h2 className="text-xl font-bold mb-4">Forma de Pagamento</h2>
                   <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                     <SelectTrigger>
@@ -415,7 +421,6 @@ export default function Checkout() {
 
                   {paymentMethod === 'cartao' && (
                     <div className="mt-6">
-                      <h3 className="text-lg font-semibold mb-4">Dados do Cartão</h3>
                       <CreditCard3D
                         formData={{
                           numeroCartao: formData.numeroCartao,
