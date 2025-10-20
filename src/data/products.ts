@@ -2,24 +2,39 @@
 import headphonesAirpods from '@/assets/products/headphones-airpods.jpg';
 import headphonesSony from '@/assets/products/headphones-sony.jpg';
 import headphonesGaming from '@/assets/products/headphones-gaming.jpg';
+import headphonesPremiumBlack from '@/assets/products/headphones-premium-black.jpg';
+import headphonesBudget from '@/assets/products/headphones-budget.jpg';
+import headsetRgbGamer from '@/assets/products/headset-rgb-gamer.jpg';
+import earbudsWhite from '@/assets/products/earbuds-white.jpg';
 import laptopMacbook from '@/assets/products/laptop-macbook.jpg';
 import laptopGaming from '@/assets/products/laptop-gaming.jpg';
 import laptopBusiness from '@/assets/products/laptop-business.jpg';
+import laptopUltrabook from '@/assets/products/laptop-ultrabook.jpg';
+import laptopBudget from '@/assets/products/laptop-budget.jpg';
 import printerInkjet from '@/assets/products/printer-inkjet.jpg';
 import printerLaser from '@/assets/products/printer-laser.jpg';
 import consolePS5 from '@/assets/products/console-ps5.jpg';
 import consoleXbox from '@/assets/products/console-xbox.jpg';
 import consoleSwitch from '@/assets/products/console-switch.jpg';
+import controllerWhite from '@/assets/products/controller-white.jpg';
 import officeChair from '@/assets/products/office-chair.jpg';
 import gamingChair from '@/assets/products/gaming-chair.jpg';
 import monitorProfessional from '@/assets/products/monitor-professional.jpg';
+import monitorCurved from '@/assets/products/monitor-curved.jpg';
 import keyboardMechanical from '@/assets/products/keyboard-mechanical.jpg';
+import keyboardRgb from '@/assets/products/keyboard-rgb.jpg';
 import mouseGaming from '@/assets/products/mouse-gaming.jpg';
+import mouseWireless from '@/assets/products/mouse-wireless.jpg';
 import accessoryPowerbank from '@/assets/products/accessory-powerbank.jpg';
+import powerbankBlack from '@/assets/products/powerbank-black.jpg';
 import accessoryCable from '@/assets/products/accessory-cable.jpg';
 import accessoryPhoneCase from '@/assets/products/accessory-phone-case.jpg';
 import phoneIphone from '@/assets/products/phone-iphone.jpg';
 import phoneSamsung from '@/assets/products/phone-samsung.jpg';
+import phonePremiumTitanium from '@/assets/products/phone-premium-titanium.jpg';
+import phoneAndroidBlue from '@/assets/products/phone-android-blue.jpg';
+import phoneMidrangeGreen from '@/assets/products/phone-midrange-green.jpg';
+import phoneFoldable from '@/assets/products/phone-foldable.jpg';
 
 export interface Product {
   id: string;
@@ -37,48 +52,83 @@ const getProductImages = (categoria: string, productName: string, productId: str
   // Create a hash from product ID or name for consistent variation
   const hashSource = productId || productName;
   const hash = hashSource.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const variation = hash % 3;
+  const variation = hash % 4; // Increased to 4 variations
   
-  // Telefones
+  // Telefones - Now with 6 different phone images
   if (categoria === 'telefones') {
+    const phoneImages = [phoneIphone, phoneSamsung, phonePremiumTitanium, phoneAndroidBlue, phoneMidrangeGreen, phoneFoldable];
+    
     if (productName.toLowerCase().includes('iphone') || productName.toLowerCase().includes('apple')) {
-      return [phoneIphone, phoneSamsung, phoneIphone];
+      return [phoneIphone, phonePremiumTitanium, phoneIphone];
     }
-    // Alternate between phone images based on variation
-    if (variation === 0) return [phoneSamsung, phoneIphone, phoneSamsung];
-    if (variation === 1) return [phoneIphone, phoneSamsung, phoneIphone];
-    return [phoneSamsung, phoneSamsung, phoneIphone];
+    if (productName.toLowerCase().includes('fold') || productName.toLowerCase().includes('flip') || productName.toLowerCase().includes('razr')) {
+      return [phoneFoldable, phonePremiumTitanium, phoneFoldable];
+    }
+    if (productName.toLowerCase().includes('samsung') && productName.toLowerCase().includes('ultra')) {
+      return [phonePremiumTitanium, phoneSamsung, phonePremiumTitanium];
+    }
+    if (productName.toLowerCase().includes('galaxy')) {
+      return [phoneSamsung, phoneAndroidBlue, phoneSamsung];
+    }
+    if (productName.toLowerCase().includes('redmi') || productName.toLowerCase().includes('poco') || productName.toLowerCase().includes('xiaomi')) {
+      return [phoneAndroidBlue, phoneMidrangeGreen, phoneAndroidBlue];
+    }
+    
+    // Rotation for other phones
+    if (variation === 0) return [phoneSamsung, phoneIphone, phoneMidrangeGreen];
+    if (variation === 1) return [phoneAndroidBlue, phonePremiumTitanium, phoneSamsung];
+    if (variation === 2) return [phoneMidrangeGreen, phoneSamsung, phoneIphone];
+    return [phoneIphone, phoneAndroidBlue, phonePremiumTitanium];
   }
   
-  // Fones de ouvido
+  // Fones de ouvido - Now with 7 different headphone/earbud images
   if (categoria === 'fones') {
-    if (productName.toLowerCase().includes('airpods') || productName.toLowerCase().includes('apple')) {
-      return [headphonesAirpods, headphonesSony, headphonesAirpods];
+    if (productName.toLowerCase().includes('airpods') || (productName.toLowerCase().includes('apple') && productName.toLowerCase().includes('buds'))) {
+      return [headphonesAirpods, earbudsWhite, headphonesAirpods];
+    }
+    if (productName.toLowerCase().includes('buds') || productName.toLowerCase().includes('tws') || productName.toLowerCase().includes('earbuds')) {
+      return [earbudsWhite, headphonesAirpods, earbudsWhite];
     }
     if (productName.toLowerCase().includes('gamer') || productName.toLowerCase().includes('gaming') || 
         productName.toLowerCase().includes('headset') || productName.toLowerCase().includes('rgb')) {
-      return [headphonesGaming, headphonesAirpods, headphonesGaming];
+      return [headsetRgbGamer, headphonesGaming, headsetRgbGamer];
     }
-    // Rotate headphone images
-    if (variation === 0) return [headphonesSony, headphonesGaming, headphonesSony];
-    if (variation === 1) return [headphonesGaming, headphonesSony, headphonesAirpods];
-    return [headphonesAirpods, headphonesSony, headphonesGaming];
+    if (productName.toLowerCase().includes('sony') || productName.toLowerCase().includes('wh-') || productName.toLowerCase().includes('premium')) {
+      return [headphonesSony, headphonesPremiumBlack, headphonesSony];
+    }
+    if (productName.toLowerCase().includes('jbl') || productName.toLowerCase().includes('edifier') || productName.toLowerCase().includes('philips')) {
+      return [headphonesBudget, headphonesSony, headphonesBudget];
+    }
+    
+    // Rotation for other headphones
+    if (variation === 0) return [headphonesSony, earbudsWhite, headphonesGaming];
+    if (variation === 1) return [earbudsWhite, headphonesAirpods, headphonesPremiumBlack];
+    if (variation === 2) return [headphonesBudget, headsetRgbGamer, headphonesSony];
+    return [headphonesPremiumBlack, headphonesBudget, earbudsWhite];
   }
   
-  // Computadores
+  // Computadores - Now with 5 different laptop images
   if (categoria === 'computadores') {
     if (productName.toLowerCase().includes('macbook') || productName.toLowerCase().includes('apple')) {
-      return [laptopMacbook, laptopBusiness, laptopMacbook];
+      return [laptopMacbook, laptopUltrabook, laptopMacbook];
     }
     if (productName.toLowerCase().includes('gam') || productName.toLowerCase().includes('legion') || 
         productName.toLowerCase().includes('nitro') || productName.toLowerCase().includes('tuf') ||
         productName.toLowerCase().includes('predator') || productName.toLowerCase().includes('rog')) {
       return [laptopGaming, laptopBusiness, laptopGaming];
     }
-    // Rotate laptop images
-    if (variation === 0) return [laptopBusiness, laptopGaming, laptopBusiness];
+    if (productName.toLowerCase().includes('ultra') || productName.toLowerCase().includes('swift') || productName.toLowerCase().includes('envy')) {
+      return [laptopUltrabook, laptopMacbook, laptopUltrabook];
+    }
+    if (productName.toLowerCase().includes('ideapad') || productName.toLowerCase().includes('essentials') || productName.toLowerCase().includes('aspire')) {
+      return [laptopBudget, laptopBusiness, laptopBudget];
+    }
+    
+    // Rotation for other laptops
+    if (variation === 0) return [laptopBusiness, laptopGaming, laptopUltrabook];
     if (variation === 1) return [laptopGaming, laptopMacbook, laptopBusiness];
-    return [laptopMacbook, laptopBusiness, laptopGaming];
+    if (variation === 2) return [laptopUltrabook, laptopBudget, laptopGaming];
+    return [laptopMacbook, laptopBusiness, laptopUltrabook];
   }
   
   // Impressoras
@@ -86,44 +136,47 @@ const getProductImages = (categoria: string, productName: string, productId: str
     if (productName.toLowerCase().includes('laser')) {
       return [printerLaser, printerInkjet, printerLaser];
     }
-    // Alternate printer images
-    if (variation === 0) return [printerInkjet, printerLaser, printerInkjet];
+    if (variation % 2 === 0) return [printerInkjet, printerLaser, printerInkjet];
     return [printerLaser, printerInkjet, printerLaser];
   }
   
-  // Games
+  // Games - Now with 4 console images + peripherals
   if (categoria === 'games') {
     if (productName.toLowerCase().includes('playstation') || productName.toLowerCase().includes('ps5') || 
         productName.toLowerCase().includes('ps4') || productName.toLowerCase().includes('dualsense')) {
-      return [consolePS5, consoleXbox, consolePS5];
+      return [consolePS5, controllerWhite, consolePS5];
     }
     if (productName.toLowerCase().includes('xbox') || productName.toLowerCase().includes('series')) {
-      return [consoleXbox, consolePS5, consoleXbox];
+      return [consoleXbox, controllerWhite, consoleXbox];
     }
     if (productName.toLowerCase().includes('switch') || productName.toLowerCase().includes('nintendo') ||
         productName.toLowerCase().includes('joy-con')) {
-      return [consoleSwitch, consolePS5, consoleSwitch];
+      return [consoleSwitch, controllerWhite, consoleSwitch];
     }
-    // For peripherals and accessories
+    if (productName.toLowerCase().includes('controle') || productName.toLowerCase().includes('controller')) {
+      return [controllerWhite, consolePS5, controllerWhite];
+    }
     if (productName.toLowerCase().includes('cadeira') || productName.toLowerCase().includes('chair')) {
       return [gamingChair, officeChair, gamingChair];
     }
     if (productName.toLowerCase().includes('teclado') || productName.toLowerCase().includes('keyboard')) {
-      return [keyboardMechanical, mouseGaming, keyboardMechanical];
+      return [keyboardRgb, keyboardMechanical, keyboardRgb];
     }
     if (productName.toLowerCase().includes('mouse')) {
-      return [mouseGaming, keyboardMechanical, mouseGaming];
+      return [mouseWireless, mouseGaming, mouseWireless];
     }
     if (productName.toLowerCase().includes('monitor')) {
-      return [monitorProfessional, laptopGaming, monitorProfessional];
+      return [monitorCurved, monitorProfessional, monitorCurved];
     }
-    // Rotate console images
-    if (variation === 0) return [consolePS5, consoleXbox, consoleSwitch];
+    
+    // Rotation for other gaming products
+    if (variation === 0) return [consolePS5, consoleXbox, controllerWhite];
     if (variation === 1) return [consoleXbox, consoleSwitch, consolePS5];
-    return [consoleSwitch, consolePS5, consoleXbox];
+    if (variation === 2) return [consoleSwitch, consolePS5, consoleXbox];
+    return [controllerWhite, consolePS5, consoleXbox];
   }
   
-  // Escritório
+  // Escritório - Now with more monitor, keyboard, and mouse variations
   if (categoria === 'escritorio') {
     if (productName.toLowerCase().includes('cadeira') || productName.toLowerCase().includes('chair')) {
       if (productName.toLowerCase().includes('gam')) {
@@ -132,24 +185,36 @@ const getProductImages = (categoria: string, productName: string, productId: str
       return [officeChair, gamingChair, officeChair];
     }
     if (productName.toLowerCase().includes('monitor')) {
-      return [monitorProfessional, laptopBusiness, monitorProfessional];
+      if (productName.toLowerCase().includes('curv') || productName.toLowerCase().includes('gam')) {
+        return [monitorCurved, monitorProfessional, monitorCurved];
+      }
+      return [monitorProfessional, monitorCurved, monitorProfessional];
     }
     if (productName.toLowerCase().includes('teclado') || productName.toLowerCase().includes('keyboard')) {
-      return [keyboardMechanical, mouseGaming, keyboardMechanical];
+      if (productName.toLowerCase().includes('mecânico') || productName.toLowerCase().includes('mechanical')) {
+        return [keyboardMechanical, keyboardRgb, keyboardMechanical];
+      }
+      return [keyboardRgb, keyboardMechanical, keyboardRgb];
     }
     if (productName.toLowerCase().includes('mouse')) {
-      return [mouseGaming, keyboardMechanical, mouseGaming];
+      if (productName.toLowerCase().includes('wireless') || productName.toLowerCase().includes('sem fio')) {
+        return [mouseWireless, mouseGaming, mouseWireless];
+      }
+      return [mouseGaming, mouseWireless, mouseGaming];
     }
-    // Rotate office items
+    
+    // Rotation for other office items
     if (variation === 0) return [officeChair, monitorProfessional, keyboardMechanical];
     if (variation === 1) return [keyboardMechanical, officeChair, mouseGaming];
-    return [monitorProfessional, mouseGaming, officeChair];
+    if (variation === 2) return [monitorCurved, mouseWireless, officeChair];
+    return [monitorProfessional, mouseWireless, keyboardRgb];
   }
   
-  // Acessórios
+  // Acessórios - Now with 2 powerbank images
   if (categoria === 'acessorios') {
     if (productName.toLowerCase().includes('powerbank') || productName.toLowerCase().includes('bateria')) {
-      return [accessoryPowerbank, accessoryCable, accessoryPowerbank];
+      if (variation % 2 === 0) return [powerbankBlack, accessoryPowerbank, powerbankBlack];
+      return [accessoryPowerbank, powerbankBlack, accessoryPowerbank];
     }
     if (productName.toLowerCase().includes('cabo') || productName.toLowerCase().includes('cable') ||
         productName.toLowerCase().includes('carregador') || productName.toLowerCase().includes('usb')) {
@@ -159,16 +224,19 @@ const getProductImages = (categoria: string, productName: string, productId: str
         productName.toLowerCase().includes('película')) {
       return [accessoryPhoneCase, accessoryPowerbank, accessoryPhoneCase];
     }
-    // Rotate accessory images
-    if (variation === 0) return [accessoryCable, accessoryPowerbank, accessoryPhoneCase];
+    
+    // Rotation for other accessories
+    if (variation === 0) return [accessoryCable, powerbankBlack, accessoryPhoneCase];
     if (variation === 1) return [accessoryPhoneCase, accessoryCable, accessoryPowerbank];
-    return [accessoryPowerbank, accessoryPhoneCase, accessoryCable];
+    if (variation === 2) return [powerbankBlack, accessoryPhoneCase, accessoryCable];
+    return [accessoryPowerbank, accessoryPhoneCase, powerbankBlack];
   }
   
-  // Default with variation
-  if (variation === 0) return [laptopBusiness, laptopGaming, laptopMacbook];
-  if (variation === 1) return [laptopGaming, laptopMacbook, laptopBusiness];
-  return [laptopMacbook, laptopBusiness, laptopGaming];
+  // Default with more variation
+  if (variation === 0) return [laptopBusiness, laptopGaming, phoneSamsung];
+  if (variation === 1) return [laptopGaming, phoneAndroidBlue, laptopUltrabook];
+  if (variation === 2) return [laptopMacbook, laptopBusiness, phoneMidrangeGreen];
+  return [phoneIphone, laptopGaming, laptopBusiness];
 };
 
 export const allProducts: Product[] = [
