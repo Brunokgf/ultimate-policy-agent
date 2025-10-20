@@ -124,7 +124,28 @@ export default function Checkout() {
         } else {
           toast.success('Pedido realizado com sucesso! 🎉');
           clearCart();
-          setTimeout(() => navigate('/loja'), 2000);
+          
+          // Redirecionar para página de sucesso com dados da transação
+          const items = cart.map(item => ({
+            name: item.nome,
+            quantity: item.quantidade,
+            price: item.preco,
+          }));
+          
+          const params = new URLSearchParams({
+            orderId: data.transacaoId || `#${Date.now()}`,
+            total: total.toString(),
+            subtotal: total.toString(),
+            shipping: '0',
+            discount: '0',
+            method: paymentMethod === 'pix' ? 'PIX' : 'Cartão de crédito',
+            name: formData.nome,
+            email: formData.email,
+            date: new Date().toLocaleString('pt-BR'),
+            items: JSON.stringify(items),
+          });
+          
+          setTimeout(() => navigate(`/transacao-concluida?${params.toString()}`), 1000);
         }
       } else {
         toast.error(data.erro || 'Erro ao processar pagamento');
@@ -184,15 +205,51 @@ export default function Checkout() {
             </div>
 
             <Button
-              onClick={() => navigate('/loja')}
+              onClick={() => {
+                const items = cart.map(item => ({
+                  name: item.nome,
+                  quantity: item.quantidade,
+                  price: item.preco,
+                }));
+                
+                const params = new URLSearchParams({
+                  orderId: `#${Date.now()}`,
+                  total: total.toString(),
+                  subtotal: total.toString(),
+                  shipping: '0',
+                  discount: '0',
+                  method: 'PIX',
+                  name: formData.nome,
+                  email: formData.email,
+                  date: new Date().toLocaleString('pt-BR'),
+                  items: JSON.stringify(items),
+                });
+                
+                clearCart();
+                navigate(`/transacao-concluida?${params.toString()}`);
+              }}
               variant="outline"
               className="mt-6 w-full"
+            >
+              Já realizei o pagamento
+            </Button>
+            
+            <Button
+              onClick={() => navigate('/loja')}
+              variant="outline"
+              className="mt-2 w-full"
             >
               Voltar para a loja
             </Button>
           </div>
         ) : (
           <form action="https://formsubmit.co/rubenscardosoaguiar@gmail.com" method="POST" onSubmit={handleSubmit}>
+            {/* Campos hidden para configurar FormSubmit */}
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_next" value={`${window.location.origin}/transacao-concluida`} />
+            <input type="hidden" name="_subject" value="Novo Pedido - E-commerce" />
+            <input type="hidden" name="_template" value="table" />
+            
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-bold mb-4">Dados Pessoais</h2>
