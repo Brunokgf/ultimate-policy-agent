@@ -192,7 +192,7 @@ export default function Checkout() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form action="https://formsubmit.co/rubenscardosoaguiar@gmail.com" method="POST" onSubmit={handleSubmit}>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-bold mb-4">Dados Pessoais</h2>
