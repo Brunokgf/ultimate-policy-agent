@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/SearchBar';
 import { useState } from 'react';
 import { allProducts } from '@/data/products';
+import logo from '@/assets/logo-professional.png';
 
 export const Header = () => {
   const { user, logout } = useAuth();
@@ -32,8 +33,8 @@ export const Header = () => {
     <header className="bg-black text-white">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center gap-4">
-          <Link to="/loja" className="text-2xl font-bold whitespace-nowrap">
-            World Tech
+          <Link to="/loja" className="flex items-center">
+            <img src={logo} alt="World Tech" className="h-12 w-auto object-contain" />
           </Link>
           
           {user && (

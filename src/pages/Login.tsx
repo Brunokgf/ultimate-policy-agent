@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import logo from '@/assets/logo-professional.png';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -35,8 +36,8 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-black text-white py-4 text-center">
-        <h1 className="text-2xl font-bold">World Tech</h1>
+      <header className="bg-black text-white py-6 flex justify-center items-center">
+        <img src={logo} alt="World Tech" className="h-16 w-auto object-contain" />
       </header>
 
       <div className="container max-w-md mx-auto px-4 py-12">
