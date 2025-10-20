@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Navigation } from '@/components/Navigation';
+import { Banner } from '@/components/Banner';
 import { ProductCard } from '@/components/ProductCard';
 import { CartSidebar } from '@/components/CartSidebar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,6 +26,7 @@ export default function Computers() {
     <div className="min-h-screen bg-[#f8f9fa]">
       <Header />
       <Navigation />
+      <Banner />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
