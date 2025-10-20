@@ -7,6 +7,7 @@ import { getProductById } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -36,7 +37,15 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     addToCart(product.nome, product.preco);
     toast.success(`${product.nome} adicionado ao carrinho!`);
+    navigate('/carrinho');
   };
+
+  const handleBuyNow = () => {
+    addToCart(product.nome, product.preco);
+    navigate('/checkout');
+  };
+
+  const [selectedImage, setSelectedImage] = useState(0);
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
@@ -56,7 +65,20 @@ export default function ProductDetail() {
         <div className="grid md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg p-8">
           <div>
             <div className="aspect-square bg-muted rounded-lg flex items-center justify-center mb-4">
-              <span className="text-9xl">📦</span>
+              <span className="text-9xl">{product.imagens[selectedImage]}</span>
+            </div>
+            <div className="flex gap-2 justify-center">
+              {product.imagens.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`w-20 h-20 rounded-lg flex items-center justify-center border-2 transition ${
+                    selectedImage === index ? 'border-[#1e90ff] bg-blue-50' : 'border-gray-200'
+                  }`}
+                >
+                  <span className="text-3xl">{img}</span>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -90,20 +112,19 @@ export default function ProductDetail() {
                 R$ {product.preco.toFixed(2).replace('.', ',')}
               </p>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={handleBuyNow}
+                  className="w-full bg-[#28a745] hover:bg-[#218838] py-6 text-lg"
+                >
+                  Comprar Agora
+                </Button>
                 <Button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-[#1e90ff] hover:bg-[#0a65c0] py-6 text-lg"
+                  className="w-full bg-[#1e90ff] hover:bg-[#0a65c0] py-6 text-lg"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
                   Adicionar ao Carrinho
-                </Button>
-                <Button
-                  onClick={() => navigate('/carrinho')}
-                  variant="outline"
-                  className="px-8 py-6"
-                >
-                  Ver Carrinho
                 </Button>
               </div>
             </div>

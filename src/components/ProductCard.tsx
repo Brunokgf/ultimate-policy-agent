@@ -5,9 +5,10 @@ interface ProductCardProps {
   nome: string;
   descricao: string;
   preco: number;
+  imagens: string[];
 }
 
-export const ProductCard = ({ id, nome, descricao, preco }: ProductCardProps) => {
+export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCardProps) => {
   const navigate = useNavigate();
 
   return (
@@ -16,7 +17,7 @@ export const ProductCard = ({ id, nome, descricao, preco }: ProductCardProps) =>
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
     >
       <div className="aspect-square bg-muted rounded mb-3 flex items-center justify-center">
-        <span className="text-4xl">📦</span>
+        <span className="text-6xl">{imagens[0]}</span>
       </div>
       <h3 className="font-semibold text-base mb-2 line-clamp-2">{nome}</h3>
       <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{descricao}</p>
