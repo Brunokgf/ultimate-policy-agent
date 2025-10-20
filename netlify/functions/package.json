@@ -5,6 +5,7 @@
   "dependencies": {
     "@netlify/blob": "^7.0.0",
     "node-fetch": "^3.3.2",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "resend": "^2.0.0"
   }
 }
