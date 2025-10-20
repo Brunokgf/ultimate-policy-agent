@@ -306,7 +306,7 @@ export const allProducts: Product[] = [
 ];
 
 export const getProductsByCategory = (category: string): Product[] => {
-  return allProducts.filter(p => p.categoria === category);
+  return allProducts.filter(p => p.categoria === category).sort((a, b) => a.preco - b.preco);
 };
 
 export const getProductById = (id: string): Product | undefined => {
