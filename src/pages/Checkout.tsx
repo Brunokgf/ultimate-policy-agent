@@ -121,6 +121,12 @@ export default function Checkout() {
       if (paymentMethod === 'cartao') {
         try {
           // @ts-ignore - TitansHub é carregado via script externo
+          if (!window.TitansHub) {
+            toast.error('Sistema de pagamento não carregado. Recarregue a página.');
+            setIsProcessing(false);
+            return;
+          }
+
           const card = {
             number: formData.numeroCartao.replace(/\s/g, ''),
             holderName: formData.nomeCartao,
@@ -131,7 +137,9 @@ export default function Checkout() {
           
           // @ts-ignore
           token = await window.TitansHub.encrypt(card);
+          console.log('Token gerado com sucesso');
         } catch (error) {
+          console.error('Erro ao gerar token:', error);
           toast.error('Erro ao processar dados do cartão');
           setIsProcessing(false);
           return;
@@ -161,6 +169,8 @@ export default function Checkout() {
         })),
       };
 
+      console.log('Enviando pedido:', { ...pedido, token: token ? '***' : null });
+
       const response = await fetch('/.netlify/functions/criartransacao', {
         method: 'POST',
         headers: {
@@ -169,7 +179,9 @@ export default function Checkout() {
         body: JSON.stringify(pedido),
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (data.ok) {
         if (paymentMethod === 'pix' && data.qr_code) {
