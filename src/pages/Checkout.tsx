@@ -216,10 +216,11 @@ export default function Checkout() {
         }
       } else {
         toast.error(data.erro || 'Erro ao processar pagamento');
+        console.error('Erro retornado pela API:', data);
       }
     } catch (error) {
-      console.error('Erro:', error);
-      toast.error('Erro ao processar pagamento');
+      console.error('Erro completo:', error);
+      toast.error('Erro ao processar pagamento: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
     } finally {
       setIsProcessing(false);
     }
