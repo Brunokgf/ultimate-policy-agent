@@ -4,7 +4,7 @@ import { getBlob, putBlob } from '@netlify/blob';
 import QRCode from 'qrcode';
 
 const TITAN_API = 'https://api.titanshub.io/v1/transactions';
-const TITAN_API_KEY = process.env.EXAMPLE_KEY; // ⚡ Chave segura via Netlify ENV
+const TITAN_API_KEY = 'sk_QkOalDBuWQsGrHKkCYuoh4EbSfqHbYn51rJxnUz4C2wd0Fe1';
 const authValue = Buffer.from(`${TITAN_API_KEY}:x`).toString('base64');
 const BLOBS_KEY = 'fila-pedidos';
 const LOTE = 2;

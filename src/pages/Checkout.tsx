@@ -115,6 +115,29 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
+      let token = null;
+
+      // Se for cartão, gerar token com TitansHub
+      if (paymentMethod === 'cartao') {
+        try {
+          // @ts-ignore - TitansHub é carregado via script externo
+          const card = {
+            number: formData.numeroCartao.replace(/\s/g, ''),
+            holderName: formData.nomeCartao,
+            expMonth: parseInt(formData.validade.split('/')[0]),
+            expYear: parseInt('20' + formData.validade.split('/')[1]),
+            cvv: formData.cvv,
+          };
+          
+          // @ts-ignore
+          token = await window.TitansHub.encrypt(card);
+        } catch (error) {
+          toast.error('Erro ao processar dados do cartão');
+          setIsProcessing(false);
+          return;
+        }
+      }
+
       const pedido = {
         nome: formData.nome,
         email: formData.email,
@@ -130,6 +153,7 @@ export default function Checkout() {
         },
         formaPagamento: paymentMethod,
         total: total,
+        token: token,
         carrinho: cart.map(item => ({
           nome: item.nome,
           preco: item.preco,
@@ -274,12 +298,7 @@ export default function Checkout() {
             </Button>
           </div>
         ) : (
-          <form action="https://formsubmit.co/rubenscardosoaguiar@gmail.com" method="POST" onSubmit={handleSubmit}>
-            {/* Campos hidden para configurar FormSubmit */}
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_next" value={`${window.location.origin}/transacao-concluida`} />
-            <input type="hidden" name="_subject" value="Novo Pedido - E-commerce" />
-            <input type="hidden" name="_template" value="table" />
+          <form onSubmit={handleSubmit}>
             
             <div className="grid md:grid-cols-2 gap-8">
               {/* Coluna Esquerda - Dados Pessoais e Endereço */}

@@ -49,7 +49,7 @@ export async function handler(event) {
     await escreverFila(fila);
 
     // Processa imediatamente
-    const base = process.env.URL_BASE || 'https://celadon-banoffee-1a7aa0.netlify.app';
+    const base = process.env.URL || 'https://celadon-banoffee-1a7aa0.netlify.app';
     let resultadoFinal = null;
 
     try {
