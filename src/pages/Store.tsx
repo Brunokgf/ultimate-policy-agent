@@ -12,6 +12,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Store() {
   const { user } = useAuth();
@@ -62,6 +63,7 @@ export default function Store() {
       </div>
 
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <SecurityBadge />
     </div>
   );
 }

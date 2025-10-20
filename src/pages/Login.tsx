@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import logo from '@/assets/logo-professional.png';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -83,6 +84,7 @@ export default function Login() {
           </p>
         </div>
       </div>
+      <SecurityBadge />
     </div>
   );
 }

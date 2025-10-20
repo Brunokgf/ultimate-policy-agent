@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { X, ShoppingBag } from 'lucide-react';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Cart() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function Cart() {
             </Button>
           </div>
         </div>
+        <SecurityBadge />
       </div>
     );
   }
@@ -98,6 +100,7 @@ export default function Cart() {
           </div>
         </div>
       </div>
+      <SecurityBadge />
     </div>
   );
 }

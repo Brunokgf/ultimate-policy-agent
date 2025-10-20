@@ -11,6 +11,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Accessories() {
   const { user } = useAuth();
@@ -36,6 +37,7 @@ export default function Accessories() {
         <div className="mb-4 text-muted-foreground">{filteredProducts.length} produtos</div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">{filteredProducts.map((product) => <ProductCard key={product.id} {...product} />)}</div>
       </div>
+      <SecurityBadge />
     </div>
   );
 }

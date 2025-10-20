@@ -12,6 +12,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Printers() {
   const { user } = useAuth();
@@ -39,6 +40,7 @@ export default function Printers() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">{filteredProducts.map((product) => <ProductCard key={product.id} {...product} />)}</div>
       </div>
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <SecurityBadge />
     </div>
   );
 }

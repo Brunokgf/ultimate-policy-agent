@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 interface OrderItem {
   name: string;
@@ -223,6 +224,7 @@ export default function TransactionSuccess() {
           </div>
         </div>
       </div>
+      <SecurityBadge />
     </div>
   );
 }

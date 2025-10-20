@@ -12,6 +12,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Headphones() {
   const { user } = useAuth();
@@ -83,6 +84,7 @@ export default function Headphones() {
       </div>
 
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <SecurityBadge />
     </div>
   );
 }

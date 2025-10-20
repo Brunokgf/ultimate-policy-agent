@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -131,6 +132,7 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+      <SecurityBadge />
     </div>
   );
 }

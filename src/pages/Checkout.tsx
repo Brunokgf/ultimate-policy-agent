@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CreditCard3D } from '@/components/CreditCard3D';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { SecurityBadge } from '@/components/SecurityBadge';
 
 export default function Checkout() {
   const { user } = useAuth();
@@ -471,6 +472,7 @@ export default function Checkout() {
           </form>
         )}
       </div>
+      <SecurityBadge />
     </div>
   );
 }
