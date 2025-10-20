@@ -168,6 +168,7 @@ export default function Checkout() {
         formaPagamento: paymentMethod,
         total: total,
         token: token,
+        installments: 1, // Pagamento à vista
         carrinho: cart.map(item => ({
           nome: item.nome,
           preco: item.preco,

@@ -55,6 +55,7 @@ export async function handler(event) {
       } else if (pedido.formaPagamento === 'cartao') {
         bodyPayload.paymentMethod = 'credit_card';
         bodyPayload.card = { hash: pedido.token };
+        bodyPayload.installments = pedido.installments || 1;
       }
 
       const res = await fetch(TITAN_API, {
