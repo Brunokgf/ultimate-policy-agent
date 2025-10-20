@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CreditCard3D } from '@/components/CreditCard3D';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -43,6 +44,35 @@ export default function Checkout() {
   if (cart.length === 0) {
     return <Navigate to="/loja" />;
   }
+
+  const formatCPF = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 11) {
+      return cleaned
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    return value;
+  };
+
+  const formatPhone = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 11) {
+      return cleaned
+        .replace(/(\d{2})(\d)/, '($1) $2')
+        .replace(/(\d{5})(\d)/, '$1-$2');
+    }
+    return value;
+  };
+
+  const formatCEP = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 8) {
+      return cleaned.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+    return value;
+  };
 
   const handleBuscarCEP = async () => {
     const cep = formData.cep.replace(/\D/g, '');
@@ -278,8 +308,9 @@ export default function Checkout() {
                     <Input
                       id="cpf"
                       value={formData.cpf}
-                      onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, cpf: formatCPF(e.target.value) })}
                       placeholder="000.000.000-00"
+                      maxLength={14}
                       required
                     />
                   </div>
@@ -288,8 +319,9 @@ export default function Checkout() {
                     <Input
                       id="telefone"
                       value={formData.telefone}
-                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, telefone: formatPhone(e.target.value) })}
                       placeholder="(00) 00000-0000"
+                      maxLength={15}
                       required
                     />
                   </div>
@@ -303,8 +335,9 @@ export default function Checkout() {
                       <Input
                         id="cep"
                         value={formData.cep}
-                        onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, cep: formatCEP(e.target.value) })}
                         placeholder="00000-000"
+                        maxLength={9}
                         required
                       />
                     </div>
@@ -381,49 +414,17 @@ export default function Checkout() {
                   </Select>
 
                   {paymentMethod === 'cartao' && (
-                    <div className="space-y-4 mt-4">
-                      <div>
-                        <Label htmlFor="numeroCartao">Número do Cartão *</Label>
-                        <Input
-                          id="numeroCartao"
-                          value={formData.numeroCartao}
-                          onChange={(e) => setFormData({ ...formData, numeroCartao: e.target.value })}
-                          placeholder="0000 0000 0000 0000"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="nomeCartao">Nome no Cartão *</Label>
-                        <Input
-                          id="nomeCartao"
-                          value={formData.nomeCartao}
-                          onChange={(e) => setFormData({ ...formData, nomeCartao: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="validade">Validade *</Label>
-                          <Input
-                            id="validade"
-                            value={formData.validade}
-                            onChange={(e) => setFormData({ ...formData, validade: e.target.value })}
-                            placeholder="MM/AA"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="cvv">CVV *</Label>
-                          <Input
-                            id="cvv"
-                            value={formData.cvv}
-                            onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
-                            placeholder="000"
-                            maxLength={3}
-                            required
-                          />
-                        </div>
-                      </div>
+                    <div className="mt-6">
+                      <h3 className="text-lg font-semibold mb-4">Dados do Cartão</h3>
+                      <CreditCard3D
+                        formData={{
+                          numeroCartao: formData.numeroCartao,
+                          nomeCartao: formData.nomeCartao,
+                          validade: formData.validade,
+                          cvv: formData.cvv,
+                        }}
+                        onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+                      />
                     </div>
                   )}
                 </div>
