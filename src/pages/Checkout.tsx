@@ -106,6 +106,7 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🚀 Iniciando handleSubmit, paymentMethod:', paymentMethod);
 
     if (!paymentMethod) {
       toast.error('Selecione a forma de pagamento');
@@ -113,19 +114,23 @@ export default function Checkout() {
     }
 
     setIsProcessing(true);
+    console.log('✅ Processing iniciado');
 
     try {
       let token = null;
 
       // Se for cartão, gerar token com TitansHub
       if (paymentMethod === 'cartao') {
+        console.log('💳 Tentando gerar token para cartão');
         try {
           // @ts-ignore - TitansHub é carregado via script externo
           if (!window.TitansHub) {
+            console.error('❌ TitansHub não está disponível');
             toast.error('Sistema de pagamento não carregado. Recarregue a página.');
             setIsProcessing(false);
             return;
           }
+          console.log('✅ TitansHub disponível');
 
           const card = {
             number: formData.numeroCartao.replace(/\s/g, ''),
@@ -134,12 +139,13 @@ export default function Checkout() {
             expYear: parseInt('20' + formData.validade.split('/')[1]),
             cvv: formData.cvv,
           };
+          console.log('📝 Dados do cartão preparados:', { ...card, number: '****', cvv: '***' });
           
           // @ts-ignore
           token = await window.TitansHub.encrypt(card);
-          console.log('Token gerado com sucesso');
+          console.log('✅ Token gerado com sucesso:', token ? 'SIM' : 'NÃO');
         } catch (error) {
-          console.error('Erro ao gerar token:', error);
+          console.error('❌ Erro ao gerar token:', error);
           toast.error('Erro ao processar dados do cartão');
           setIsProcessing(false);
           return;
@@ -169,7 +175,7 @@ export default function Checkout() {
         })),
       };
 
-      console.log('Enviando pedido:', { ...pedido, token: token ? '***' : null });
+      console.log('📤 Enviando pedido para API:', { ...pedido, token: token ? '***' : null });
 
       const response = await fetch('/.netlify/functions/criartransacao', {
         method: 'POST',
@@ -179,9 +185,9 @@ export default function Checkout() {
         body: JSON.stringify(pedido),
       });
 
-      console.log('Response status:', response.status);
+      console.log('📥 Response status:', response.status);
       const data = await response.json();
-      console.log('Response data:', data);
+      console.log('📥 Response data:', data);
 
       if (data.ok) {
         if (paymentMethod === 'pix' && data.qr_code) {
