@@ -1,30 +1,14 @@
 // /.netlify/functions/criartransacao.js
 import fetch from 'node-fetch';
-import { getBlob, putBlob } from '@netlify/blob';
 import { Resend } from 'resend';
+import QRCode from 'qrcode';
 
-const BLOBS_KEY = 'fila-pedidos';
-const RESEND_API_KEY = 're_3DAQaDeL_3NzVmXcqjYpa3gFMUcSHHSSL';
+const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_3DAQaDeL_3NzVmXcqjYpa3gFMUcSHHSSL';
 const resend = new Resend(RESEND_API_KEY);
 
-async function lerFila() {
-  try {
-    const blob = await getBlob(BLOBS_KEY);
-    if (!blob) return [];
-    return JSON.parse(await blob.text());
-  } catch (err) {
-    console.error('Erro ao ler fila:', err);
-    return [];
-  }
-}
-
-async function escreverFila(fila) {
-  try {
-    await putBlob(BLOBS_KEY, JSON.stringify(fila, null, 2), { contentType: 'application/json' });
-  } catch (err) {
-    console.error('Erro ao escrever fila:', err);
-  }
-}
+const TITAN_API = 'https://api.titanshub.io/v1/transactions';
+const TITAN_API_KEY = 'sk_QkOalDBuWQsGrHKkCYuoh4EbSfqHbYn51rJxnUz4C2wd0Fe1';
+const authValue = Buffer.from(`${TITAN_API_KEY}:x`).toString('base64');
 
 export async function handler(event) {
   const retornoErro = (status, msg) => ({
@@ -45,29 +29,62 @@ export async function handler(event) {
     if (!pedido.formaPagamento || !pedido.total)
       return retornoErro(400, 'Total e formaPagamento obrigatórios');
 
-    // Adiciona pedido à fila
-    const fila = await lerFila();
-    const novoPedido = { id: Date.now().toString(), ...pedido };
-    fila.push(novoPedido);
-    await escreverFila(fila);
-
-    // Processa imediatamente
-    const base = process.env.URL || 'https://celadon-banoffee-1a7aa0.netlify.app';
-    let resultadoFinal = null;
+    // Processa pagamento direto na Titan
+    let resultadoFinal = { ok: false };
 
     try {
-      const res = await fetch(`${base}/.netlify/functions/processarFila`, { method: 'POST' });
-      const data = await res.json();
-      resultadoFinal = data.processados?.find(p => p.id === novoPedido.id);
+      const bodyPayload = {
+        amount: Math.round(pedido.total * 100),
+        customer: {
+          name: pedido.nome,
+          email: pedido.email,
+          document: { type: 'cpf', number: pedido.cpf?.replace(/\D/g, '') || '' },
+        },
+        items: [
+          {
+            title: 'Pedido World Tech',
+            unitPrice: Math.round(pedido.total * 100),
+            quantity: 1,
+            tangible: false,
+          },
+        ],
+      };
 
-      // ⚡ Inclui QR code em base64 se existir
-      if (resultadoFinal?.qr_code) {
-        const QRCode = await import('qrcode');
-        resultadoFinal.qrcodeBase64 = await QRCode.toDataURL(resultadoFinal.qr_code);
+      if (pedido.formaPagamento === 'pix') {
+        bodyPayload.paymentMethod = 'pix';
+      } else if (pedido.formaPagamento === 'cartao') {
+        bodyPayload.paymentMethod = 'credit_card';
+        bodyPayload.card = { hash: pedido.token };
       }
 
+      const res = await fetch(TITAN_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${authValue}`,
+          accept: 'application/json',
+        },
+        body: JSON.stringify(bodyPayload),
+      });
+
+      const data = await res.json();
+      console.log('Resposta Titan:', data);
+
+      if (data.status === 'waiting_payment' || data.status === 'paid') {
+        resultadoFinal.ok = true;
+        resultadoFinal.transacaoId = data.id;
+        resultadoFinal.qr_code = data.pix?.qrcode || null;
+
+        // Gera QR code em base64 para frontend
+        if (resultadoFinal.qr_code) {
+          resultadoFinal.qrcodeBase64 = await QRCode.toDataURL(resultadoFinal.qr_code);
+        }
+      } else {
+        resultadoFinal.erro = data.error || data.refusedReason || 'Pagamento não autorizado';
+      }
     } catch (err) {
-      console.error('Erro ao chamar processarFila:', err);
+      console.error('Erro ao processar pagamento:', err);
+      resultadoFinal.erro = 'Erro ao processar: ' + err.message;
     }
 
     // Enviar email com detalhes do pedido
