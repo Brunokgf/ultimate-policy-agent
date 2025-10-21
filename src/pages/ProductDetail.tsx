@@ -9,6 +9,8 @@ import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { SecurityBadge } from '@/components/SecurityBadge';
+import { useUnsplashImages } from '@/hooks/useUnsplashImages';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -21,6 +23,10 @@ export default function ProductDetail() {
   }
 
   const product = getProductById(id || '');
+  const { images: unsplashImages, loading: imagesLoading } = useUnsplashImages(
+    product?.nome || '', 
+    product?.imagens || []
+  );
 
   if (!product) {
     return (
@@ -66,14 +72,18 @@ export default function ProductDetail() {
         <div className="grid md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg p-8">
         <div>
           <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
-            <img 
-              src={product.imagens[selectedImage]} 
-              alt={product.nome}
-              className="w-full h-full object-cover"
-            />
+            {imagesLoading ? (
+              <Skeleton className="w-full h-full" />
+            ) : (
+              <img 
+                src={unsplashImages[selectedImage]} 
+                alt={product.nome}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
           <div className="flex gap-2 justify-center">
-            {product.imagens.map((img, index) => (
+            {unsplashImages.map((img, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
@@ -81,11 +91,15 @@ export default function ProductDetail() {
                   selectedImage === index ? 'border-[#1e90ff] bg-blue-50' : 'border-gray-200'
                 }`}
               >
-                <img 
-                  src={img} 
-                  alt={`${product.nome} ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                {imagesLoading ? (
+                  <Skeleton className="w-full h-full" />
+                ) : (
+                  <img 
+                    src={img} 
+                    alt={`${product.nome} ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </button>
             ))}
           </div>
