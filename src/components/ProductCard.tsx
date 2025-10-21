@@ -1,6 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { useUnsplashImages } from '@/hooks/useUnsplashImages';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductCardProps {
   id: string;
@@ -12,7 +10,6 @@ interface ProductCardProps {
 
 export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { images: unsplashImages, loading } = useUnsplashImages(nome, imagens);
 
   return (
     <div 
@@ -20,15 +17,11 @@ export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCard
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
     >
       <div className="aspect-square bg-muted rounded mb-3 overflow-hidden">
-        {loading ? (
-          <Skeleton className="w-full h-full" />
-        ) : (
-          <img 
-            src={unsplashImages[0]} 
-            alt={nome}
-            className="w-full h-full object-cover"
-          />
-        )}
+        <img 
+          src={imagens[0]} 
+          alt={nome}
+          className="w-full h-full object-cover"
+        />
       </div>
       <h3 className="font-semibold text-base mb-2 line-clamp-2">{nome}</h3>
       <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{descricao}</p>
