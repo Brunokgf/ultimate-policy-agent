@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
-// Cache para evitar múltiplas requisições
-const imageCache = new Map<string, string[]>();
+// Cache desabilitado para sempre buscar imagens atualizadas
+// const imageCache = new Map<string, string[]>();
 
 export const searchProductImages = async (productName: string, count: number = 3): Promise<string[]> => {
   try {
@@ -35,17 +35,11 @@ export const searchProductImages = async (productName: string, count: number = 3
 };
 
 export const getCachedProductImages = async (productName: string, fallbackImages: string[]): Promise<string[]> => {
-  // Check cache first
-  if (imageCache.has(productName)) {
-    return imageCache.get(productName)!;
-  }
-
-  // Fetch from Google Image Search
+  // Sempre buscar imagens novas sem cache
   const images = await searchProductImages(productName, 3);
   
-  // If we got images, cache them
+  // If we got images, return them
   if (images.length > 0) {
-    imageCache.set(productName, images);
     return images;
   }
 
