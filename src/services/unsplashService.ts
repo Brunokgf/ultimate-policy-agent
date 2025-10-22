@@ -1,18 +1,7 @@
-// Unsplash API Service
-const UNSPLASH_ACCESS_KEY = 'nVX5XcbG66en78dad4KPHq1rsWoPNIk2qsgiwGTaXHE';
-const UNSPLASH_API_URL = 'https://api.unsplash.com';
+import { supabase } from '@/integrations/supabase/client';
 
-export interface UnsplashImage {
-  id: string;
-  urls: {
-    raw: string;
-    full: string;
-    regular: string;
-    small: string;
-    thumb: string;
-  };
-  alt_description: string | null;
-}
+// Cache para evitar múltiplas requisições
+const imageCache = new Map<string, string[]>();
 
 export const searchProductImages = async (productName: string, count: number = 3): Promise<string[]> => {
   try {
@@ -25,51 +14,25 @@ export const searchProductImages = async (productName: string, count: number = 3
       .replace(/[,]/g, '')
       .trim();
 
-    const response = await fetch(
-      `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(searchQuery)}&per_page=${count}&orientation=landscape`,
-      {
-        headers: {
-          Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
-        },
-      }
-    );
+    const { data, error } = await supabase.functions.invoke('google-image-search', {
+      body: { query: searchQuery }
+    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch from Unsplash');
+    if (error) {
+      console.warn('Google Image Search error:', error);
+      return [];
     }
 
-    const data = await response.json();
-    
-    if (data.results && data.results.length > 0) {
-      return data.results.slice(0, count).map((img: UnsplashImage) => img.urls.regular);
-    }
-
-    // Fallback: search for product category
-    const fallbackQuery = productName.split(' ')[0];
-    const fallbackResponse = await fetch(
-      `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(fallbackQuery)}&per_page=${count}&orientation=landscape`,
-      {
-        headers: {
-          Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
-        },
-      }
-    );
-
-    const fallbackData = await fallbackResponse.json();
-    
-    if (fallbackData.results && fallbackData.results.length > 0) {
-      return fallbackData.results.slice(0, count).map((img: UnsplashImage) => img.urls.regular);
+    if (data?.images && data.images.length > 0) {
+      return data.images.slice(0, count).map((img: any) => img.url);
     }
 
     return [];
   } catch (error) {
-    console.error('Error fetching images from Unsplash:', error);
+    console.error('Error fetching images from Google:', error);
     return [];
   }
 };
-
-// Cache para evitar múltiplas requisições
-const imageCache = new Map<string, string[]>();
 
 export const getCachedProductImages = async (productName: string, fallbackImages: string[]): Promise<string[]> => {
   // Check cache first
@@ -77,7 +40,7 @@ export const getCachedProductImages = async (productName: string, fallbackImages
     return imageCache.get(productName)!;
   }
 
-  // Fetch from Unsplash
+  // Fetch from Google Image Search
   const images = await searchProductImages(productName, 3);
   
   // If we got images, cache them
@@ -86,6 +49,6 @@ export const getCachedProductImages = async (productName: string, fallbackImages
     return images;
   }
 
-  // Return fallback if Unsplash fails
+  // Return fallback if Google search fails
   return fallbackImages;
 };
