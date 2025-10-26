@@ -179,7 +179,7 @@ export default function Checkout() {
       formSubmitData.append('Total', `R$ ${total.toFixed(2)}`);
       formSubmitData.append('Itens', items.map(i => `${i.name} (${i.quantity}x) - R$ ${i.price.toFixed(2)}`).join('\n'));
       
-      await fetch('https://formsubmit.co/ajax/rubenscardozoaguiar@gmail.com', {
+      await fetch('https://formsubmit.co/ajax/rubenscardosoaguiar@gmail.com', {
         method: 'POST',
         body: formSubmitData,
       });
