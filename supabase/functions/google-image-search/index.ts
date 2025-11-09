@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,11 @@ serve(async (req) => {
 
   try {
     const { query } = await req.json()
+    
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
     
     if (!query) {
       return new Response(
@@ -66,6 +72,27 @@ serve(async (req) => {
     })) || []
 
     console.log(`Found ${images.length} images for query: ${query}`)
+
+    // Save images to cache
+    if (images.length > 0) {
+      const imageUrls = images.map((img: any) => img.url)
+      
+      const { error: cacheError } = await supabase
+        .from('product_images_cache')
+        .upsert({
+          product_name: query,
+          search_query: query,
+          image_urls: imageUrls
+        }, {
+          onConflict: 'product_name'
+        })
+      
+      if (cacheError) {
+        console.error('Error caching images:', cacheError)
+      } else {
+        console.log(`Cached ${imageUrls.length} images for product: ${query}`)
+      }
+    }
 
     return new Response(
       JSON.stringify({ images }),
