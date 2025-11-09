@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      product_images_cache: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_urls: string[]
+          product_name: string
+          search_query: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_urls: string[]
+          product_name: string
+          search_query: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_urls?: string[]
+          product_name?: string
+          search_query?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
