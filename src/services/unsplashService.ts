@@ -1,8 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
 
-// Cache desabilitado para sempre buscar imagens atualizadas
-// const imageCache = new Map<string, string[]>();
-
 export const searchProductImages = async (productName: string, count: number = 3): Promise<string[]> => {
   try {
     // Clean product name for better search results
@@ -14,12 +11,12 @@ export const searchProductImages = async (productName: string, count: number = 3
       .replace(/[,]/g, '')
       .trim();
 
-    const { data, error } = await supabase.functions.invoke('google-image-search', {
-      body: { query: searchQuery }
+    const { data, error } = await supabase.functions.invoke('generate-product-images', {
+      body: { productName: searchQuery }
     });
 
     if (error) {
-      console.warn('Google Image Search error:', error);
+      console.warn('AI Image Generation error:', error);
       return [];
     }
 
@@ -29,7 +26,7 @@ export const searchProductImages = async (productName: string, count: number = 3
 
     return [];
   } catch (error) {
-    console.error('Error fetching images from Google:', error);
+    console.error('Error generating images with AI:', error);
     return [];
   }
 };
@@ -48,8 +45,8 @@ export const getCachedProductImages = async (productName: string, fallbackImages
       return cachedData.image_urls;
     }
 
-    // If not cached, fetch new images from Google
-    console.log('Fetching new images for:', productName);
+    // If not cached, generate new images with AI
+    console.log('Generating AI images for:', productName);
     const images = await searchProductImages(productName, 3);
     
     // If we got images, they were automatically cached by the edge function
