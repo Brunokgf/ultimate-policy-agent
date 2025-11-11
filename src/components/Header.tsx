@@ -31,19 +31,45 @@ export const Header = () => {
 
   return (
     <header className="bg-black text-white">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center gap-4">
-          <Link to="/loja" className="flex items-center">
-            <img src={logo} alt="World Tech" className="h-12 w-auto object-contain" />
-          </Link>
+      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+          <div className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-4">
+            <Link to="/loja" className="flex items-center">
+              <img src={logo} alt="World Tech" className="h-10 sm:h-12 w-auto object-contain" />
+            </Link>
+            
+            {user && (
+              <div className="flex sm:hidden items-center gap-3">
+                <button
+                  onClick={() => navigate('/carrinho')}
+                  className="relative hover:opacity-80 transition"
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#1e90ff] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                      {totalItems}
+                    </span>
+                  )}
+                </button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={logout}
+                  className="text-white hover:text-white/80 px-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </div>
           
           {user && (
             <>
-              <div className="flex-1 max-w-xl">
+              <div className="flex-1 w-full sm:max-w-xl">
                 <SearchBar onSearch={handleSearch} />
               </div>
               
-              <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-4">
                 <span className="text-sm hidden md:block">Olá, {user.name}</span>
                 <button
                   onClick={() => navigate('/carrinho')}

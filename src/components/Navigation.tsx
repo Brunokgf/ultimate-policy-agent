@@ -14,14 +14,14 @@ export const Navigation = () => {
   const location = useLocation();
 
   return (
-    <nav className="bg-[#222]">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-center gap-8 py-3">
+    <nav className="bg-[#222] overflow-x-auto">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex sm:justify-center gap-4 sm:gap-8 py-3 min-w-max sm:min-w-0">
           {categories.map((category) => (
             <Link
               key={category.path}
               to={category.path}
-              className={`text-white font-bold transition-colors hover:text-[#1e90ff] ${
+              className={`text-white text-sm sm:text-base font-bold transition-colors hover:text-[#1e90ff] whitespace-nowrap ${
                 location.pathname === category.path ? 'text-[#1e90ff]' : ''
               }`}
             >
