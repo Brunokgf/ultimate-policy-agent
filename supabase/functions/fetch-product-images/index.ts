@@ -6,6 +6,57 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+async function downloadAndUploadImage(
+  imageUrl: string, 
+  productName: string, 
+  index: number,
+  supabase: any
+): Promise<string | null> {
+  try {
+    // Download image
+    const response = await fetch(imageUrl);
+    if (!response.ok) return null;
+    
+    const blob = await response.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Get file extension from URL or default to jpg
+    const urlPath = new URL(imageUrl).pathname;
+    const ext = urlPath.split('.').pop()?.toLowerCase() || 'jpg';
+    const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    const fileExt = validExts.includes(ext) ? ext : 'jpg';
+    
+    // Create filename
+    const sanitizedName = productName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const filename = `${sanitizedName}-${index}.${fileExt}`;
+    const filePath = `products/${filename}`;
+    
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, uint8Array, {
+        contentType: blob.type || 'image/jpeg',
+        upsert: true
+      });
+    
+    if (error) {
+      console.error(`Error uploading ${filename}:`, error);
+      return null;
+    }
+    
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+    
+    return publicUrl;
+  } catch (error) {
+    console.error('Error downloading/uploading image:', error);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -57,21 +108,46 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const imageUrls = data.items?.map((item: any) => item.link) || [];
+    const googleImageUrls = data.items?.map((item: any) => item.link) || [];
+    
+    if (googleImageUrls.length === 0) {
+      return new Response(
+        JSON.stringify({ images: [] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Save to cache
+    console.log(`Found ${googleImageUrls.length} images, downloading and uploading to storage...`);
+
+    // Download and upload images to Supabase Storage
+    const uploadPromises = googleImageUrls.map((url: string, index: number) => 
+      downloadAndUploadImage(url, productName, index, supabase)
+    );
+    
+    const uploadedUrls = await Promise.all(uploadPromises);
+    const validUrls = uploadedUrls.filter((url): url is string => url !== null);
+
+    if (validUrls.length === 0) {
+      console.error('Failed to upload any images');
+      return new Response(
+        JSON.stringify({ images: [] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Save permanent URLs to cache
     await supabase
       .from('product_images_cache')
       .upsert({
         product_name: productName,
         search_query: searchQuery,
-        image_urls: imageUrls,
+        image_urls: validUrls,
       });
 
-    console.log(`Cached ${imageUrls.length} images for ${productName}`);
+    console.log(`Uploaded and cached ${validUrls.length} images for ${productName}`);
 
     return new Response(
-      JSON.stringify({ images: imageUrls }),
+      JSON.stringify({ images: validUrls }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
