@@ -82,49 +82,12 @@ export const useProductImages = (productName: string, productId: string, product
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Try Google API first for real product images
-        const { data, error: functionError } = await supabase.functions.invoke(
-          'fetch-product-images',
-          {
-            body: { 
-              productName, 
-              productId,
-              productDescription: productDescription || '',
-              categoria: categoria || ''
-            }
-          }
-        );
-
-        if (functionError) {
-          console.error('Google API failed, using local fallback:', functionError);
-          const localImages = getLocalImages(productId);
-          setImages(localImages);
-        } else if (data?.images && data.images.length > 0) {
-          setImages(data.images);
-        } else {
-          // Fallback to local images
-          const localImages = getLocalImages(productId);
-          setImages(localImages);
-        }
-      } catch (err) {
-        console.error('Error fetching product images:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load images');
-        const localImages = getLocalImages(productId);
-        setImages(localImages);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productName) {
-      fetchImages();
-    }
-  }, [productName, productId, productDescription]);
+    // Use local images directly (API credits exhausted)
+    setLoading(true);
+    const localImages = getLocalImages(productId);
+    setImages(localImages);
+    setLoading(false);
+  }, [productId]);
 
   return { images, loading, error };
 };
