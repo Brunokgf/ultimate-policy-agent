@@ -97,6 +97,58 @@ export const allProducts: Product[] = [
   // Impressoras
   { id: 'impr-01', nome: 'Impressora HP Jato de Tinta', descricao: 'Multifuncional colorida', preco: 599.00, categoria: 'impressoras', imagens: [], detalhes: 'Imprime, copia e digitaliza', especificacoes: ['Jato tinta', 'Wi-Fi', 'Colorida', 'Scanner'] },
   { id: 'impr-02', nome: 'Impressora Brother Laser', descricao: 'Laser monocromática', preco: 1299.00, categoria: 'impressoras', imagens: [], detalhes: 'Velocidade e economia', especificacoes: ['Laser', 'Wi-Fi', 'Duplex', '30 ppm'] },
+  { id: 'impr-03', nome: 'HP LaserJet Pro M404dn', descricao: 'Laser monocromática profissional', preco: 1899.00, categoria: 'impressoras', imagens: [], detalhes: 'Impressora laser rápida e eficiente', especificacoes: ['Laser', 'Ethernet', 'Duplex', '38 ppm'] },
+  { id: 'impr-04', nome: 'Epson EcoTank L3250', descricao: 'Tanque de tinta econômico', preco: 1099.00, categoria: 'impressoras', imagens: [], detalhes: 'Sistema de tanque de tinta recarregável', especificacoes: ['Tanque tinta', 'Wi-Fi', 'Colorida', 'Scanner'] },
+  { id: 'impr-05', nome: 'Canon Pixma G3160', descricao: 'Multifuncional tanque de tinta', preco: 999.00, categoria: 'impressoras', imagens: [], detalhes: 'Impressão econômica e de qualidade', especificacoes: ['Tanque tinta', 'Wi-Fi', 'Colorida', 'Scanner'] },
+  { id: 'impr-06', nome: 'Brother DCP-L2550DW', descricao: 'Multifuncional laser duplex', preco: 1699.00, categoria: 'impressoras', imagens: [], detalhes: 'Laser com impressão frente e verso automática', especificacoes: ['Laser', 'Wi-Fi', 'Duplex', '34 ppm'] },
+  { id: 'impr-07', nome: 'HP DeskJet 2774', descricao: 'Multifuncional compacta', preco: 449.00, categoria: 'impressoras', imagens: [], detalhes: 'Impressora compacta para casa', especificacoes: ['Jato tinta', 'Wi-Fi', 'Colorida', 'Scanner'] },
+  
+  // Mais Telefones
+  { id: 'tel-41', nome: 'Xiaomi Redmi Note 13 Pro', descricao: '256GB, Azul', preco: 1799.00, categoria: 'telefones', imagens: [], detalhes: 'AMOLED 120Hz e câmera de 200MP', especificacoes: ['256GB', 'Snapdragon 7s Gen 2', '200MP', '67W'] },
+  { id: 'tel-42', nome: 'Samsung Galaxy M54', descricao: '256GB, Prata', preco: 1899.00, categoria: 'telefones', imagens: [], detalhes: 'Super AMOLED+ 120Hz e Exynos 1380', especificacoes: ['256GB', 'Exynos 1380', '108MP', '25W'] },
+  { id: 'tel-43', nome: 'Poco X5 Pro', descricao: '256GB, Amarelo', preco: 1799.00, categoria: 'telefones', imagens: [], detalhes: 'AMOLED 120Hz e carregamento 67W', especificacoes: ['256GB', 'Snapdragon 778G', '108MP', '67W'] },
+  { id: 'tel-44', nome: 'Vivo V27', descricao: '256GB, Verde', preco: 2299.00, categoria: 'telefones', imagens: [], detalhes: 'Câmera de 50MP e AMOLED 120Hz', especificacoes: ['256GB', 'Dimensity 7200', '50MP', '66W'] },
+  { id: 'tel-45', nome: 'Oppo Reno 8', descricao: '256GB, Preto', preco: 2199.00, categoria: 'telefones', imagens: [], detalhes: 'AMOLED 90Hz e carregamento super rápido', especificacoes: ['256GB', 'Dimensity 1300', '50MP', '80W'] },
+  
+  // Mais Fones
+  { id: 'fone-15', nome: 'Apple AirPods Max', descricao: 'Over-ear premium Apple', preco: 5499.00, categoria: 'fones', imagens: [], detalhes: 'Fone over-ear com ANC e áudio espacial', especificacoes: ['ANC', 'Spatial Audio', '20h bateria', 'H1 chip'] },
+  { id: 'fone-16', nome: 'Jabra Elite 85h', descricao: 'ANC inteligente', preco: 1799.00, categoria: 'fones', imagens: [], detalhes: 'ANC inteligente com 8 microfones', especificacoes: ['SmartSound ANC', '36h bateria', 'Multi-point', 'Resistente chuva'] },
+  { id: 'fone-17', nome: 'Razer Kraken V3', descricao: 'Headset gamer RGB', preco: 699.00, categoria: 'fones', imagens: [], detalhes: 'Headset gamer com RGB Chroma', especificacoes: ['THX Spatial', 'RGB Chroma', 'TriForce 50mm', 'USB'] },
+  { id: 'fone-18', nome: 'HyperX Cloud II', descricao: 'Headset gamer confortável', preco: 599.00, categoria: 'fones', imagens: [], detalhes: 'Conforto e qualidade de som para gamers', especificacoes: ['7.1 Surround', 'Microfone removível', 'Almofadas memory foam', 'Multi-plataforma'] },
+  { id: 'fone-19', nome: 'Logitech G733', descricao: 'Headset wireless RGB', preco: 899.00, categoria: 'fones', imagens: [], detalhes: 'Headset sem fio leve e colorido', especificacoes: ['Wireless', 'RGB', '29h bateria', 'Blue VO!CE'] },
+  { id: 'fone-20', nome: 'Audio-Technica ATH-M50x', descricao: 'Fone profissional de estúdio', preco: 1199.00, categoria: 'fones', imagens: [], detalhes: 'Referência para produção musical', especificacoes: ['45mm drivers', 'Dobrável', 'Cabo destacável', 'Isolamento acústico'] },
+  
+  // Mais Computadores
+  { id: 'comp-04', nome: 'Asus Vivobook 15', descricao: 'i5 12ª, 8GB, 256GB', preco: 3299.00, categoria: 'computadores', imagens: [], detalhes: 'Notebook fino e leve para trabalho', especificacoes: ['Core i5-1235U', '8GB RAM', '256GB SSD', '15.6" Full HD'] },
+  { id: 'comp-05', nome: 'HP Pavilion 14', descricao: 'Ryzen 5, 16GB, 512GB', preco: 3799.00, categoria: 'computadores', imagens: [], detalhes: 'Notebook AMD com bom desempenho', especificacoes: ['Ryzen 5 5625U', '16GB RAM', '512GB SSD', '14" Full HD'] },
+  { id: 'comp-06', nome: 'Acer Nitro 5', descricao: 'i5 12ª, RTX 3050, 16GB', preco: 5999.00, categoria: 'computadores', imagens: [], detalhes: 'Notebook gamer com RTX 3050', especificacoes: ['Core i5-12450H', 'RTX 3050', '16GB RAM', '512GB SSD'] },
+  { id: 'comp-07', nome: 'Samsung Galaxy Book2', descricao: 'i5 12ª, 8GB, 256GB', preco: 3599.00, categoria: 'computadores', imagens: [], detalhes: 'Notebook ultrafino da Samsung', especificacoes: ['Core i5-1235U', '8GB RAM', '256GB SSD', '15.6" Full HD'] },
+  { id: 'comp-08', nome: 'Lenovo IdeaPad Gaming 3i', descricao: 'i5 12ª, RTX 2050, 8GB', preco: 4799.00, categoria: 'computadores', imagens: [], detalhes: 'Entrada no mundo gamer', especificacoes: ['Core i5-12450H', 'RTX 2050', '8GB RAM', '512GB SSD'] },
+  { id: 'comp-09', nome: 'Dell XPS 13', descricao: 'i7 13ª, 16GB, 512GB', preco: 8999.00, categoria: 'computadores', imagens: [], detalhes: 'Ultrabook premium da Dell', especificacoes: ['Core i7-1360P', '16GB RAM', '512GB SSD', '13.4" FHD+'] },
+  { id: 'comp-10', nome: 'MacBook Air M2', descricao: '8GB RAM, 256GB SSD', preco: 10999.00, categoria: 'computadores', imagens: [], detalhes: 'MacBook Air com chip M2', especificacoes: ['Apple M2', '8GB RAM', '256GB SSD', '13.6" Liquid Retina'] },
+  
+  // Mais Jogos
+  { id: 'jogo-05', nome: 'Nintendo Switch Lite', descricao: 'Portátil compacto', preco: 1799.00, categoria: 'jogos', imagens: [], detalhes: 'Switch totalmente portátil', especificacoes: ['5.5" LCD', '32GB', 'Apenas portátil', 'Leve'] },
+  { id: 'jogo-06', nome: 'Steam Deck 256GB', descricao: 'PC portátil para jogos', preco: 4999.00, categoria: 'jogos', imagens: [], detalhes: 'Jogue sua biblioteca Steam em qualquer lugar', especificacoes: ['7" LCD', '256GB SSD', 'AMD APU', 'SteamOS'] },
+  { id: 'jogo-07', nome: 'Controle DualSense PS5', descricao: 'Controle sem fio PS5', preco: 499.00, categoria: 'jogos', imagens: [], detalhes: 'Controle oficial do PlayStation 5', especificacoes: ['Haptic Feedback', 'Adaptive Triggers', 'USB-C', 'Microfone integrado'] },
+  { id: 'jogo-08', nome: 'Volante Logitech G29', descricao: 'Volante para simuladores', preco: 2299.00, categoria: 'jogos', imagens: [], detalhes: 'Volante com force feedback realista', especificacoes: ['Force Feedback', 'Pedais', 'PS5/PS4/PC', '900° rotação'] },
+  { id: 'jogo-09', nome: 'Cadeira Gamer ThunderX3', descricao: 'Reclinável 180°', preco: 1399.00, categoria: 'jogos', imagens: [], detalhes: 'Cadeira gamer com reclinação total', especificacoes: ['Reclinável 180°', 'Almofadas', 'Braços 3D', '150kg'] },
+  { id: 'jogo-10', nome: 'Headset Gamer HyperX Cloud Alpha', descricao: 'Áudio premium para games', preco: 599.00, categoria: 'jogos', imagens: [], detalhes: 'Dual Chamber Drivers para áudio superior', especificacoes: ['Dual Chamber', 'Microfone destacável', 'Cabo trançado', 'Multi-plataforma'] },
+  
+  // Mais Acessórios
+  { id: 'aces-04', nome: 'Carregador Anker 65W GaN', descricao: 'Carregador rápido USB-C', preco: 199.00, categoria: 'acessorios', imagens: [], detalhes: 'Carregador compacto e potente', especificacoes: ['65W', 'GaN Tech', '2x USB-C', '1x USB-A'] },
+  { id: 'aces-05', nome: 'Hub USB-C 7 em 1', descricao: 'Adaptador multifuncional', preco: 149.00, categoria: 'acessorios', imagens: [], detalhes: 'Expanda as portas do seu notebook', especificacoes: ['HDMI 4K', '3x USB 3.0', 'USB-C PD', 'SD/MicroSD'] },
+  { id: 'aces-06', nome: 'Suporte Notebook Ajustável', descricao: 'Ergonômico de alumínio', preco: 129.00, categoria: 'acessorios', imagens: [], detalhes: 'Melhore sua postura no trabalho', especificacoes: ['Alumínio', 'Ajustável', 'Até 17"', 'Dobrável'] },
+  { id: 'aces-07', nome: 'Webcam Logitech C920', descricao: 'Full HD 1080p', preco: 499.00, categoria: 'acessorios', imagens: [], detalhes: 'Webcam profissional para reuniões', especificacoes: ['1080p 30fps', 'Foco automático', 'Microfone estéreo', 'Correção de luz'] },
+  { id: 'aces-08', nome: 'Mousepad Gamer XXL', descricao: 'Base antiderrapante', preco: 89.00, categoria: 'acessorios', imagens: [], detalhes: 'Mousepad grande para teclado e mouse', especificacoes: ['90x40cm', 'Base borracha', 'Borda costurada', 'Superfície lisa'] },
+  
+  // Mais Escritório
+  { id: 'escr-09', nome: 'Mesa Gamer RGB', descricao: 'Suporte para monitor e LED', preco: 1299.00, categoria: 'escritorio', imagens: [], detalhes: 'Mesa gamer com iluminação RGB', especificacoes: ['140x60cm', 'RGB', 'Suporte headset', 'Gancho cabos'] },
+  { id: 'escr-10', nome: 'Suporte Monitor Duplo', descricao: 'Articulado para 2 monitores', preco: 349.00, categoria: 'escritorio', imagens: [], detalhes: 'Organize sua mesa com 2 monitores', especificacoes: ['Até 27"', 'VESA', '2 monitores', 'Ajustável'] },
+  { id: 'escr-11', nome: 'Luminária LED Gamer', descricao: 'RGB com controle remoto', preco: 199.00, categoria: 'escritorio', imagens: [], detalhes: 'Iluminação ambiente para setup', especificacoes: ['RGB', 'Controle remoto', 'Modos música', 'USB'] },
+  { id: 'escr-12', nome: 'Microfone USB HyperX QuadCast', descricao: 'Condensador profissional', preco: 899.00, categoria: 'escritorio', imagens: [], detalhes: 'Microfone para streaming e podcasts', especificacoes: ['4 padrões polares', 'Anti-vibração', 'LED', 'Tap to mute'] },
+  { id: 'escr-13', nome: 'Nobreak SMS 1200VA', descricao: 'Proteção bivolt', preco: 549.00, categoria: 'escritorio', imagens: [], detalhes: 'Proteja seus equipamentos', especificacoes: ['1200VA', '6 tomadas', 'Bivolt', 'USB'] },
+  { id: 'escr-14', nome: 'Organizador de Cabos', descricao: 'Kit gerenciamento cabos', preco: 49.90, categoria: 'escritorio', imagens: [], detalhes: 'Mantenha sua mesa organizada', especificacoes: ['Clips', 'Velcro', 'Espiral', 'Adesivos'] },
 ];
 
 export const getProductsByCategory = (category: string): Product[] => {
