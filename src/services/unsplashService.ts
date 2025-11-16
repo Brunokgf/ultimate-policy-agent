@@ -11,12 +11,12 @@ export const searchProductImages = async (productName: string, count: number = 3
       .replace(/[,]/g, '')
       .trim();
 
-    const { data, error } = await supabase.functions.invoke('generate-product-images', {
-      body: { productName: searchQuery }
+    const { data, error } = await supabase.functions.invoke('google-image-search', {
+      body: { query: searchQuery }
     });
 
     if (error) {
-      console.warn('AI Image Generation error:', error);
+      console.warn('Google Image Search error:', error);
       return [];
     }
 
@@ -45,8 +45,8 @@ export const getCachedProductImages = async (productName: string, fallbackImages
       return cachedData.image_urls;
     }
 
-    // If not cached, generate new images with AI
-    console.log('Generating AI images for:', productName);
+    // If not cached, search with Google API
+    console.log('Searching Google images for:', productName);
     const images = await searchProductImages(productName, 3);
     
     // If we got images, they were automatically cached by the edge function
