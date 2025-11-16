@@ -24,7 +24,11 @@ export default function ProductDetail() {
   }
 
   const product = getProductById(id || '');
-  const { images, loading } = useProductImages(product?.nome || '', id || '');
+  const { images, loading } = useProductImages(
+    product?.nome || '', 
+    id || '',
+    product?.descricao
+  );
 
   if (!product) {
     return (
