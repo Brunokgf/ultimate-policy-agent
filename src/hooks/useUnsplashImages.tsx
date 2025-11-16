@@ -9,15 +9,17 @@ export const useUnsplashImages = (productName: string, fallbackImages: string[])
     let mounted = true;
 
     const loadImages = async () => {
+      console.log('🎨 useUnsplashImages: Loading images for', productName);
       try {
         const unsplashImages = await getCachedProductImages(productName, fallbackImages);
         
         if (mounted) {
+          console.log('✅ useUnsplashImages: Loaded', unsplashImages.length, 'images');
           setImages(unsplashImages);
           setLoading(false);
         }
       } catch (error) {
-        console.error('Error loading images:', error);
+        console.error('❌ useUnsplashImages: Error loading images:', error);
         if (mounted) {
           setImages(fallbackImages);
           setLoading(false);
@@ -30,7 +32,7 @@ export const useUnsplashImages = (productName: string, fallbackImages: string[])
     return () => {
       mounted = false;
     };
-  }, [productName]);
+  }, [productName, fallbackImages]);
 
   return { images, loading };
 };
