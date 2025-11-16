@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/product-images`;
+
 // Complete mapping of product IDs to their local images (fallback)
 const getLocalImages = (productId: string): string[] => {
   const imageMap: Record<string, string[]> = {
@@ -82,11 +84,47 @@ export const useProductImages = (productName: string, productId: string, product
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Use local images directly (API credits exhausted)
-    setLoading(true);
-    const localImages = getLocalImages(productId);
-    setImages(localImages);
-    setLoading(false);
+    const fetchImages = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch images from storage for this product
+        const { data: files, error: storageError } = await supabase.storage
+          .from('product-images')
+          .list(productId, {
+            sortBy: { column: 'name', order: 'asc' }
+          });
+
+        if (storageError) {
+          console.log('Storage error, using local fallback:', storageError);
+          const localImages = getLocalImages(productId);
+          setImages(localImages);
+        } else if (files && files.length > 0) {
+          // Build public URLs for the images
+          const imageUrls = files.map(file => 
+            `${STORAGE_URL}/${productId}/${file.name}`
+          );
+          setImages(imageUrls);
+        } else {
+          // Fallback to local images
+          console.log('No images in storage, using local fallback');
+          const localImages = getLocalImages(productId);
+          setImages(localImages);
+        }
+      } catch (err) {
+        console.error('Error fetching product images:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load images');
+        const localImages = getLocalImages(productId);
+        setImages(localImages);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      fetchImages();
+    }
   }, [productId]);
 
   return { images, loading, error };

@@ -18,6 +18,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import TransactionSuccess from "./pages/TransactionSuccess";
 import NotFound from "./pages/NotFound";
+import AdminProducts from "./pages/AdminProducts";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/carrinho" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/transacao-concluida" element={<TransactionSuccess />} />
+              <Route path="/admin/produtos" element={<AdminProducts />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
