@@ -90,6 +90,7 @@ export const useProductImages = (productName: string, productId: string, product
             body: { 
               productName, 
               productId,
+              productDescription: productDescription || '',
               categoria: categoria || ''
             }
           }
