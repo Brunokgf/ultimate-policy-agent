@@ -13,6 +13,8 @@ import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
 import { SecurityBadge } from '@/components/SecurityBadge';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/Pagination';
 
 export default function Headphones() {
   const { user } = useAuth();
@@ -21,6 +23,14 @@ export default function Headphones() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const products = getProductsByCategory('fones');
   const { searchQuery, setSearchQuery, filteredProducts } = useProductSearch(products);
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems,
+    goToPage,
+    hasNextPage,
+    hasPrevPage,
+  } = usePagination(filteredProducts, 40);
 
   if (!user) {
     return <Navigate to="/" />;
@@ -60,14 +70,22 @@ export default function Headphones() {
         </div>
 
         <div className="mb-4 text-muted-foreground">
-          {filteredProducts.length} produtos encontrados
+          {filteredProducts.length} produtos encontrados | Página {currentPage} de {totalPages}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
+          {paginatedItems.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+        />
 
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">

@@ -12,6 +12,8 @@ import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
 import { SecurityBadge } from '@/components/SecurityBadge';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/Pagination';
 
 export default function Games() {
   const { user } = useAuth();
@@ -20,6 +22,14 @@ export default function Games() {
   const products = getProductsByCategory('games');
   const { setSearchQuery, filteredProducts } = useProductSearch(products);
   const totalItems = cart.reduce((sum, item) => sum + item.quantidade, 0);
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems,
+    goToPage,
+    hasNextPage,
+    hasPrevPage,
+  } = usePagination(filteredProducts, 40);
 
   if (!user) { return <Navigate to="/" />; }
 
@@ -34,8 +44,15 @@ export default function Games() {
             <Button onClick={() => navigate('/carrinho')} className="bg-[#1e90ff] hover:bg-[#0a65c0] relative"><ShoppingCart className="w-5 h-5 mr-2" />Carrinho{totalItems > 0 && <span className="absolute -top-2 -right-2 bg-destructive text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">{totalItems}</span>}</Button>
           </div>
         </div>
-        <div className="mb-4 text-muted-foreground">{filteredProducts.length} produtos</div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">{filteredProducts.map((product) => <ProductCard key={product.id} {...product} />)}</div>
+        <div className="mb-4 text-muted-foreground">{filteredProducts.length} produtos | Página {currentPage} de {totalPages}</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">{paginatedItems.map((product) => <ProductCard key={product.id} {...product} />)}</div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+        />
       </div>
       <SecurityBadge />
     </div>
