@@ -100,8 +100,11 @@ serve(async (req) => {
     const searchQuery = encodeURIComponent(`${productName} product high quality`);
     const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=4`;
 
-    console.log(`Fetching images for ${productName} from Google API`);
-    console.log(`API Key exists: ${!!GOOGLE_API_KEY}, Search Engine ID exists: ${!!SEARCH_ENGINE_ID}`);
+    console.log(`Fetching images for ${productName}`);
+    console.log(`Search Engine ID: ${SEARCH_ENGINE_ID}`);
+    console.log(`API Key (first 10 chars): ${GOOGLE_API_KEY?.substring(0, 10)}...`);
+    console.log(`Search query: ${searchQuery}`);
+    console.log(`Full URL (key masked): https://www.googleapis.com/customsearch/v1?key=***&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=4`);
     
     const response = await fetch(url);
     
