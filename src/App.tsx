@@ -20,6 +20,7 @@ import TransactionSuccess from "./pages/TransactionSuccess";
 import NotFound from "./pages/NotFound";
 import AdminProducts from "./pages/AdminProducts";
 import MigrateImages from "./pages/MigrateImages";
+import ImportProducts from "./pages/ImportProducts";
 
 const queryClient = new QueryClient();
 
@@ -44,8 +45,9 @@ const App = () => (
               <Route path="/carrinho" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/transacao-concluida" element={<TransactionSuccess />} />
-              <Route path="/admin/produtos" element={<AdminProducts />} />
-              <Route path="/admin/migrar-imagens" element={<MigrateImages />} />
+          <Route path="/admin/produtos" element={<AdminProducts />} />
+          <Route path="/admin/migrar-imagens" element={<MigrateImages />} />
+          <Route path="/admin/importar-produtos" element={<ImportProducts />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
