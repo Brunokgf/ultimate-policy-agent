@@ -102,32 +102,42 @@ serve(async (req) => {
 
     // Fetch from Google API with improved specificity using category
     const categoryMap: Record<string, string> = {
-      'telefones': 'smartphone celular mobile phone',
-      'fones': 'headphones earbuds fones ouvido',
-      'computadores': 'laptop notebook computer',
-      'impressoras': 'impressora printer',
-      'escritorio': 'office furniture cadeira mesa',
-      'acessorios': 'tech accessory acessório',
-      'games': 'gaming console videogame',
-      'jogos': 'gaming console videogame'
+      'telefones': 'smartphone',
+      'fones': 'headphones earbuds',
+      'computadores': 'laptop notebook',
+      'impressoras': 'printer',
+      'escritorio': 'office chair desk',
+      'acessorios': 'accessory',
+      'games': 'console gaming',
+      'jogos': 'console gaming'
+    };
+    
+    // Terms to exclude from search results
+    const excludeTerms: Record<string, string> = {
+      'telefones': '-charger -case -cover -screen protector -cabo -carregador -capa',
+      'fones': '-case -cable -tips -cabo',
+      'computadores': '-mouse -keyboard -bag -mochila',
+      'impressoras': '-paper -toner -cartridge',
+      'games': '-controller -game -jogo -cd',
+      'jogos': '-controller -game -jogo -cd'
     };
     
     const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : '';
-    console.log('Category term mapped to:', categoryTerm || 'NONE');
+    const excludeTerm = categoria ? excludeTerms[categoria.toLowerCase()] || '' : '';
+    console.log('Category term:', categoryTerm || 'NONE', '| Exclude:', excludeTerm || 'NONE');
     
-    // Extract brand from product name for more specific searches
+    // Extract brand from product name
     const brandKeywords = ['Samsung', 'Apple', 'iPhone', 'Motorola', 'Xiaomi', 'Realme', 'OnePlus', 
                           'Sony', 'JBL', 'Bose', 'Dell', 'Lenovo', 'HP', 'Acer', 'PlayStation', 
-                          'Xbox', 'Nintendo', 'Logitech', 'Razer', 'HyperX'];
+                          'Xbox', 'Nintendo', 'Logitech', 'Razer', 'HyperX', 'Nothing', 'Asus', 
+                          'Google', 'Pixel', 'Poco', 'Redmi', 'Oppo', 'Vivo'];
     const brand = brandKeywords.find(b => productName.includes(b)) || '';
-    console.log('Detected brand:', brand || 'NONE');
     
-    // Build highly specific search terms
+    // Build highly specific search terms with exclusions
     const searchTerms = [
-      `${productName} official product photo white background`,
-      `${brand} ${productName.replace(brand, '').trim()} ${categoryTerm} stock image`,
-      `${productName} ${categoryTerm} high resolution product photography`,
-      `"${productName}" official press image`
+      `"${productName}" official product photo ${excludeTerm}`,
+      `${brand} ${productName.replace(brand, '').trim()} ${categoryTerm} stock photo ${excludeTerm}`,
+      `${productName} ${categoryTerm} press image white background ${excludeTerm}`
     ].filter(term => term.trim().length > 0);
     
     console.log('Search terms:', searchTerms);
