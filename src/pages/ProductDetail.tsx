@@ -9,18 +9,22 @@ import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { SecurityBadge } from '@/components/SecurityBadge';
+import { useProductImages } from '@/hooks/useProductImages';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const [selectedImage, setSelectedImage] = useState(0);
 
   if (!user) {
     return <Navigate to="/" />;
   }
 
   const product = getProductById(id || '');
+  const { images, loading } = useProductImages(product?.nome || '', id || '');
 
   if (!product) {
     return (
@@ -44,9 +48,7 @@ export default function ProductDetail() {
   const handleBuyNow = () => {
     addToCart(product.nome, product.preco);
     navigate('/checkout');
-  };
-
-  const [selectedImage, setSelectedImage] = useState(0);
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
@@ -66,14 +68,21 @@ export default function ProductDetail() {
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8 bg-white rounded-lg shadow-lg p-4 sm:p-8">
         <div>
           <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
-            <img 
-              src={product.imagens[selectedImage]} 
-              alt={product.nome}
-              className="w-full h-full object-cover"
-            />
+            {loading ? (
+              <Skeleton className="w-full h-full" />
+            ) : (
+              <img 
+                src={images[selectedImage] || '/placeholder.svg'} 
+                alt={product.nome}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }}
+              />
+            )}
           </div>
           <div className="flex gap-2 justify-center overflow-x-auto pb-2">
-            {product.imagens.map((img, index) => (
+            {images.map((img, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
@@ -85,6 +94,9 @@ export default function ProductDetail() {
                   src={img} 
                   alt={`${product.nome} ${index + 1}`}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
                 />
               </button>
             ))}
