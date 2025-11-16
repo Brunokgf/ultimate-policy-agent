@@ -12,3 +12,6 @@ verify_jwt = false
 [functions.clear-product-images]
 verify_jwt = false
 
+[functions.scrape-products]
+verify_jwt = false
+

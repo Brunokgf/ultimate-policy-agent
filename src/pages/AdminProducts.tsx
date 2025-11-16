@@ -103,14 +103,24 @@ export default function AdminProducts() {
             </Button>
             <h1 className="text-3xl font-bold">Gerenciar Imagens dos Produtos</h1>
           </div>
-          <Button 
-            onClick={() => navigate('/admin/migrar-imagens')}
-            variant="default"
-            size="lg"
-          >
-            <Wand2 className="h-4 w-4 mr-2" />
-            Migração Automática
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => navigate('/admin/importar-produtos')}
+              variant="outline"
+              size="lg"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Importar de URL
+            </Button>
+            <Button 
+              onClick={() => navigate('/admin/migrar-imagens')}
+              variant="default"
+              size="lg"
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              Migração Automática
+            </Button>
+          </div>
         </div>
 
         <Card className="p-6 mb-6">
