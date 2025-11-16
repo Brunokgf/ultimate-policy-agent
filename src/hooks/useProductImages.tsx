@@ -72,7 +72,7 @@ const getLocalImages = (productId: string): string[] => {
   return imageMap[productId] || ['/placeholder.svg'];
 };
 
-export const useProductImages = (productName: string, productId: string, productDescription?: string) => {
+export const useProductImages = (productName: string, productId: string, productDescription?: string, categoria?: string) => {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +89,8 @@ export const useProductImages = (productName: string, productId: string, product
           {
             body: { 
               productName, 
-              productId 
+              productId,
+              categoria: categoria || ''
             }
           }
         );

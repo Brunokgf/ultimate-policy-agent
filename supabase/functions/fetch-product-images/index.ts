@@ -63,7 +63,7 @@ serve(async (req) => {
   }
 
   try {
-    const { productName, productId } = await req.json();
+    const { productName, productId, categoria } = await req.json();
     
     if (!productName) {
       throw new Error('Product name is required');
@@ -96,11 +96,22 @@ serve(async (req) => {
       );
     }
 
-    // Fetch from Google API with improved specificity
-    // Extract brand and model from product name for better search
+    // Fetch from Google API with improved specificity using category
+    const categoryMap: Record<string, string> = {
+      'telefones': 'smartphone',
+      'fones de ouvido': 'headphones earbuds',
+      'computadores': 'laptop notebook computer',
+      'impressoras': 'printer',
+      'escritorio': 'office furniture',
+      'acessorios': 'tech accessory',
+      'jogos': 'gaming console'
+    };
+    
+    const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : '';
+    
     const searchTerms = [
-      `${productName} official product image`,
-      `${productName} stock photo white background`,
+      `${productName} ${categoryTerm} official product image white background`,
+      `${productName} ${categoryTerm} stock photo`,
       `${productName} product photography`
     ];
     
