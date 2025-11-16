@@ -12,7 +12,7 @@ interface ProductCardProps {
 
 export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { images, loading } = useProductImages(nome, id);
+  const { images, loading } = useProductImages(nome, id, descricao);
 
   return (
     <div 

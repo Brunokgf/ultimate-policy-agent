@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
-// Complete mapping of product IDs to their local images
+// Complete mapping of product IDs to their local images (fallback)
 const getLocalImages = (productId: string): string[] => {
   const imageMap: Record<string, string[]> = {
     // Telefones
@@ -71,16 +72,56 @@ const getLocalImages = (productId: string): string[] => {
   return imageMap[productId] || ['/placeholder.svg'];
 };
 
-export const useProductImages = (productName: string, productId: string) => {
+export const useProductImages = (productName: string, productId: string, productDescription?: string) => {
   const [images, setImages] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const localImages = getLocalImages(productId);
-    setImages(localImages);
-    setLoading(false);
-  }, [productId]);
+    const fetchImages = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Try to generate AI images
+        const { data, error: functionError } = await supabase.functions.invoke(
+          'generate-product-image',
+          {
+            body: { 
+              productName, 
+              productDescription: productDescription || '',
+              productId 
+            }
+          }
+        );
+
+        if (functionError) {
+          console.error('AI generation failed, using local fallback:', functionError);
+          // Fallback to local images
+          const localImages = getLocalImages(productId);
+          setImages(localImages);
+        } else if (data?.images && data.images.length > 0) {
+          setImages(data.images);
+        } else {
+          // Fallback to local images
+          const localImages = getLocalImages(productId);
+          setImages(localImages);
+        }
+      } catch (err) {
+        console.error('Error fetching product images:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load images');
+        // Fallback to local images
+        const localImages = getLocalImages(productId);
+        setImages(localImages);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productName) {
+      fetchImages();
+    }
+  }, [productName, productId, productDescription]);
 
   return { images, loading, error };
 };

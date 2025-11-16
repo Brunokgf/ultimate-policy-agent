@@ -2,3 +2,6 @@ project_id = "nvnnzovquizugwyrlkpw"
 
 [functions.fetch-product-images]
 verify_jwt = false
+
+[functions.generate-product-image]
+verify_jwt = false
