@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { useUnsplashImages } from '@/hooks/useUnsplashImages';
 
 interface ProductCardProps {
   id: string;
@@ -11,7 +10,6 @@ interface ProductCardProps {
 
 export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { images } = useUnsplashImages(nome, imagens);
 
   return (
     <div 
@@ -20,7 +18,7 @@ export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCard
     >
       <div className="aspect-square bg-muted rounded mb-3 overflow-hidden">
         <img 
-          src={images[0]} 
+          src={imagens[0]} 
           alt={nome}
           className="w-full h-full object-cover"
         />
