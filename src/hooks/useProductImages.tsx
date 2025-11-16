@@ -29,6 +29,7 @@ const getLocalImages = (productId: string): string[] => {
     'tel-22': ['/src/assets/products/samsung-m54-silver.jpg', '/src/assets/products/samsung-m54-silver-front.jpg', '/src/assets/products/samsung-m54-silver-back.jpg', '/src/assets/products/samsung-m54-silver-side.jpg'],
     'tel-23': ['/src/assets/products/motorola-razr-40-black.jpg', '/src/assets/products/motorola-razr-40-black-front.jpg', '/src/assets/products/motorola-razr-40-black-back.jpg', '/src/assets/products/motorola-razr-40-black-side.jpg'],
     'tel-24': ['/src/assets/products/xiaomi-redmi-note-12-blue.jpg', '/src/assets/products/xiaomi-redmi-note-12-blue-front.jpg', '/src/assets/products/xiaomi-redmi-note-12-blue-back.jpg', '/src/assets/products/xiaomi-redmi-note-12-blue-side.jpg'],
+    'tel-39': ['/src/assets/products/xiaomi-redmi-a2-blue.jpg', '/src/assets/products/xiaomi-redmi-a2-blue-front.jpg', '/src/assets/products/xiaomi-redmi-a2-blue-back.jpg', '/src/assets/products/xiaomi-redmi-a2-blue-angle.jpg'],
     'tel-40': ['/src/assets/products/motorola-moto-e13-graphite.jpg', '/src/assets/products/motorola-moto-e13-graphite-front.jpg', '/src/assets/products/motorola-moto-e13-graphite-back.jpg'],
     
     // Fones de Ouvido
