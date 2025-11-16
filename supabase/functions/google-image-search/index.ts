@@ -63,7 +63,7 @@ serve(async (req) => {
 
     const data = await response.json()
     
-    const images = data.items?.map((item: any) => ({
+    const googleImages = data.items?.map((item: any) => ({
       url: item.link,
       thumbnail: item.image?.thumbnailLink,
       title: item.title,
@@ -71,28 +71,82 @@ serve(async (req) => {
       height: item.image?.height,
     })) || []
 
-    console.log(`Found ${images.length} images for query: ${query}`)
+    console.log(`Found ${googleImages.length} images for query: ${query}`)
 
-    // Save images to cache
-    if (images.length > 0) {
-      const imageUrls = images.map((img: any) => img.url)
+    // Download and save images to storage
+    const savedImageUrls: string[] = []
+    
+    if (googleImages.length > 0) {
+      for (let i = 0; i < googleImages.length; i++) {
+        const googleImage = googleImages[i]
+        try {
+          console.log(`Downloading image ${i + 1}/${googleImages.length}: ${googleImage.url}`)
+          
+          // Download the image
+          const imageResponse = await fetch(googleImage.url)
+          if (!imageResponse.ok) {
+            console.error(`Failed to download image: ${imageResponse.statusText}`)
+            continue
+          }
+          
+          const imageBlob = await imageResponse.blob()
+          const imageBuffer = await imageBlob.arrayBuffer()
+          
+          // Generate a unique filename
+          const fileExtension = googleImage.url.split('.').pop()?.split('?')[0] || 'jpg'
+          const fileName = `${query.replace(/\s+/g, '-').toLowerCase()}-${i + 1}-${Date.now()}.${fileExtension}`
+          const filePath = `products/${fileName}`
+          
+          // Upload to Supabase Storage
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, imageBuffer, {
+              contentType: imageBlob.type || 'image/jpeg',
+              upsert: true
+            })
+          
+          if (uploadError) {
+            console.error(`Error uploading image to storage:`, uploadError)
+            continue
+          }
+          
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath)
+          
+          savedImageUrls.push(publicUrl)
+          console.log(`✅ Saved image to storage: ${publicUrl}`)
+        } catch (error) {
+          console.error(`Error processing image ${i + 1}:`, error)
+        }
+      }
       
-      const { error: cacheError } = await supabase
-        .from('product_images_cache')
-        .upsert({
-          product_name: query,
-          search_query: query,
-          image_urls: imageUrls
-        }, {
-          onConflict: 'product_name'
-        })
-      
-      if (cacheError) {
-        console.error('Error caching images:', cacheError)
-      } else {
-        console.log(`Cached ${imageUrls.length} images for product: ${query}`)
+      // Cache the saved image URLs
+      if (savedImageUrls.length > 0) {
+        const { error: cacheError } = await supabase
+          .from('product_images_cache')
+          .upsert({
+            product_name: query,
+            search_query: query,
+            image_urls: savedImageUrls
+          }, {
+            onConflict: 'product_name'
+          })
+        
+        if (cacheError) {
+          console.error('Error caching images:', cacheError)
+        } else {
+          console.log(`✅ Cached ${savedImageUrls.length} images for product: ${query}`)
+        }
       }
     }
+    
+    const images = savedImageUrls.map(url => ({
+      url,
+      thumbnail: url,
+      title: query
+    }))
 
     return new Response(
       JSON.stringify({ images }),
