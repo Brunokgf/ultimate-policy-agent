@@ -100,184 +100,100 @@ serve(async (req) => {
       );
     }
 
-    // Fetch from Google API with improved specificity using category
+    // Generate images with AI for better consistency
+    console.log(`Generating AI images for ${productName}...`);
+    
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('Lovable AI not configured');
+    }
+
     const categoryMap: Record<string, string> = {
-      'telefones': 'smartphone only',
-      'fones': 'headphones only',
-      'computadores': 'laptop only',
-      'impressoras': 'printer only',
+      'telefones': 'smartphone mobile phone',
+      'fones': 'wireless headphones earbuds',
+      'computadores': 'laptop computer notebook',
+      'impressoras': 'office printer',
       'escritorio': 'office chair',
       'acessorios': 'tech accessory',
-      'games': 'gaming console only',
-      'jogos': 'gaming console only'
+      'games': 'gaming console',
+      'jogos': 'gaming console'
     };
     
-    // Terms to exclude from search results
-    const excludeTerms: Record<string, string> = {
-      'telefones': '-charger -case -cover -screen -protector -cabo -carregador -capa -fone -headphone -acessorio',
-      'fones': '-case -cable -tips -cabo -phone -smartphone',
-      'computadores': '-mouse -keyboard -bag -mochila -acessorio',
-      'impressoras': '-paper -toner -cartridge -ink',
-      'games': '-controller -controle -game -jogo -cd -dvd',
-      'jogos': '-controller -controle -game -jogo -cd -dvd'
-    };
+    const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : 'product';
     
-    const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : '';
-    const excludeTerm = categoria ? excludeTerms[categoria.toLowerCase()] || '' : '';
-    console.log('Category term:', categoryTerm || 'NONE', '| Exclude:', excludeTerm || 'NONE');
-    
-    // Extract brand from product name
-    const brandKeywords = ['Samsung', 'Apple', 'iPhone', 'Motorola', 'Xiaomi', 'Realme', 'OnePlus', 
-                          'Sony', 'JBL', 'Bose', 'Dell', 'Lenovo', 'HP', 'Acer', 'PlayStation', 
-                          'Xbox', 'Nintendo', 'Logitech', 'Razer', 'HyperX', 'Nothing', 'Asus', 
-                          'Google', 'Pixel', 'Poco', 'Redmi', 'Oppo', 'Vivo'];
-    const brand = brandKeywords.find(b => productName.includes(b)) || '';
-    
-    // Build highly specific search terms combining name AND category with exclusions
-    const searchTerms = [
-      `"${productName}" ${categoryTerm} official product photo white background ${excludeTerm}`,
-      `${brand} ${productName.replace(brand, '').trim()} ${categoryTerm} official image ${excludeTerm}`,
-      `"${productName}" ${categoryTerm} stock photo ${excludeTerm}`
-    ].filter(term => term.trim().length > 0);
-    
-    console.log('Search terms:', searchTerms);
-    
-    const allImages: string[] = [];
-    
-    // Try multiple search queries to get the best results
-    for (const searchTerm of searchTerms) {
-      const searchQuery = encodeURIComponent(searchTerm);
-      const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=2&imgSize=large&imgType=photo`;
-
-      console.log(`Searching: ${searchTerm}`);
+    // Generate 4 different product views with AI
+    const aiImagePromises = ['front view', 'side view', 'angled view', '3/4 view'].map(async (view, index) => {
+      const prompt = `Professional product photography of ${productName}. High quality ${categoryTerm}, ${view}, clean white background, studio lighting, 4K resolution, commercial photography style, product only, no accessories, realistic`;
       
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Google API error ${response.status}:`, errorText);
-        continue; // Try next search term
-      }
-
-      const data = await response.json();
-      const googleImageUrls = data.items?.map((item: any) => item.link) || [];
-      
-      if (googleImageUrls.length > 0) {
-        allImages.push(...googleImageUrls);
-      }
-    }
-    
-    // If no images found from Google, generate with AI
-    if (allImages.length === 0) {
-      console.log('No images found from Google, generating with AI...');
-      
-      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-      if (!LOVABLE_API_KEY) {
-        console.log('Lovable API not configured, returning empty');
-        return new Response(
-          JSON.stringify({ images: [] }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      // Generate 4 AI images
-      const aiImagePromises = ['front view', 'side view', 'angled view', '3/4 view'].map(async (view, index) => {
-        const prompt = `Professional product photography of ${productName}. ${categoryTerm || 'product'}, ${view}, clean white background, studio lighting, high quality, 4K, commercial style, no accessories, product only`;
+      try {
+        console.log(`Generating ${view} for ${productName}`);
         
-        try {
-          const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'google/gemini-2.5-flash-image',
-              messages: [{ role: 'user', content: prompt }],
-              modalities: ['image', 'text']
-            }),
-          });
+        const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash-image',
+            messages: [{ role: 'user', content: prompt }],
+            modalities: ['image', 'text']
+          }),
+        });
 
-          if (!response.ok) return null;
-
-          const data = await response.json();
-          const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-          if (!imageUrl) return null;
-
-          // Upload to storage
-          const base64Data = imageUrl.split(',')[1];
-          const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-          
-          const sanitizedName = productName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-          const filename = `${sanitizedName}-ai-${index}.png`;
-          const filePath = `products/${filename}`;
-          
-          const { error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(filePath, binaryData, {
-              contentType: 'image/png',
-              upsert: true
-            });
-          
-          if (uploadError) return null;
-          
-          const { data: { publicUrl } } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(filePath);
-          
-          return publicUrl;
-        } catch (error) {
-          console.error('Error generating AI image:', error);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`AI generation error ${response.status}:`, errorText);
           return null;
         }
-      });
 
-      const aiUrls = await Promise.all(aiImagePromises);
-      const validAiUrls = aiUrls.filter((url): url is string => url !== null);
+        const data = await response.json();
+        const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        if (!imageUrl) {
+          console.error('No image URL in AI response');
+          return null;
+        }
 
-      if (validAiUrls.length > 0) {
-        await supabase
-          .from('product_images_cache')
-          .upsert({
-            product_name: productName,
-            search_query: productName,
-            image_urls: validAiUrls,
+        // Upload to storage
+        const base64Data = imageUrl.split(',')[1];
+        const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+        
+        const sanitizedName = productName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const filename = `${sanitizedName}-ai-${index}.png`;
+        const filePath = `products/${filename}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, binaryData, {
+            contentType: 'image/png',
+            upsert: true
           });
-
-        console.log(`Generated ${validAiUrls.length} AI images for ${productName}`);
-        return new Response(
-          JSON.stringify({ images: validAiUrls }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        
+        if (uploadError) {
+          console.error(`Error uploading ${filename}:`, uploadError);
+          return null;
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(filePath);
+        
+        console.log(`Generated and uploaded ${view} for ${productName}`);
+        return publicUrl;
+      } catch (error) {
+        console.error(`Error generating ${view}:`, error);
+        return null;
       }
+    });
 
-      return new Response(
-        JSON.stringify({ images: [] }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Remove duplicates and take best 4 images
-    const uniqueImages = [...new Set(allImages)].slice(0, 4);
-    console.log(`Found ${uniqueImages.length} unique images, downloading and uploading to storage...`);
-
-    // Download and upload images to Supabase Storage
-    const uploadPromises = uniqueImages.map((url: string, index: number) => 
-      downloadAndUploadImage(url, productName, index, supabase)
-    );
-    
-    const uploadedUrls = await Promise.all(uploadPromises);
-    const validUrls = uploadedUrls.filter((url): url is string => url !== null);
+    const aiUrls = await Promise.all(aiImagePromises);
+    const validUrls = aiUrls.filter((url): url is string => url !== null);
 
     if (validUrls.length === 0) {
-      console.error('Failed to upload any images');
-      return new Response(
-        JSON.stringify({ images: [] }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      throw new Error('Failed to generate any images');
     }
 
-    // Save permanent URLs to cache
+    // Cache the generated images
     await supabase
       .from('product_images_cache')
       .upsert({
@@ -286,7 +202,7 @@ serve(async (req) => {
         image_urls: validUrls,
       });
 
-    console.log(`Uploaded and cached ${validUrls.length} images for ${productName}`);
+    console.log(`Generated and cached ${validUrls.length} AI images for ${productName}`);
 
     return new Response(
       JSON.stringify({ images: validUrls }),
