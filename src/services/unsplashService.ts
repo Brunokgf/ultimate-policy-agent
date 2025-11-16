@@ -2,6 +2,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const searchProductImages = async (productName: string, count: number = 3): Promise<string[]> => {
   try {
+    console.log('🔍 Searching images for product:', productName);
+    
     // Clean product name for better search results
     const searchQuery = productName
       .replace(/\d+GB/gi, '')
@@ -11,19 +13,25 @@ export const searchProductImages = async (productName: string, count: number = 3
       .replace(/[,]/g, '')
       .trim();
 
+    console.log('📝 Cleaned search query:', searchQuery);
+
     const { data, error } = await supabase.functions.invoke('google-image-search', {
       body: { query: searchQuery }
     });
 
+    console.log('📡 Edge function response:', { data, error });
+
     if (error) {
-      console.warn('Google Image Search error:', error);
+      console.error('❌ Google Image Search error:', error);
       return [];
     }
 
     if (data?.images && data.images.length > 0) {
+      console.log(`✅ Found ${data.images.length} images`);
       return data.images.slice(0, count).map((img: any) => img.url);
     }
 
+    console.warn('⚠️ No images found in response');
     return [];
   } catch (error) {
     console.error('Error generating images with AI:', error);
