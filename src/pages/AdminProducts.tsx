@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Upload, Trash2, ArrowLeft } from 'lucide-react';
+import { Upload, Trash2, ArrowLeft, Wand2 } from 'lucide-react';
 import { allProducts } from '@/data/products';
 
 export default function AdminProducts() {
@@ -103,6 +103,14 @@ export default function AdminProducts() {
             </Button>
             <h1 className="text-3xl font-bold">Gerenciar Imagens dos Produtos</h1>
           </div>
+          <Button 
+            onClick={() => navigate('/admin/migrar-imagens')}
+            variant="default"
+            size="lg"
+          >
+            <Wand2 className="h-4 w-4 mr-2" />
+            Migração Automática
+          </Button>
         </div>
 
         <Card className="p-6 mb-6">
