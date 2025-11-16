@@ -167,8 +167,90 @@ serve(async (req) => {
       }
     }
     
+    // If no images found from Google, generate with AI
     if (allImages.length === 0) {
-      console.log('No images found, using fallback');
+      console.log('No images found from Google, generating with AI...');
+      
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) {
+        console.log('Lovable API not configured, returning empty');
+        return new Response(
+          JSON.stringify({ images: [] }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Generate 4 AI images
+      const aiImagePromises = ['front view', 'side view', 'angled view', '3/4 view'].map(async (view, index) => {
+        const prompt = `Professional product photography of ${productName}. ${categoryTerm || 'product'}, ${view}, clean white background, studio lighting, high quality, 4K, commercial style, no accessories, product only`;
+        
+        try {
+          const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash-image',
+              messages: [{ role: 'user', content: prompt }],
+              modalities: ['image', 'text']
+            }),
+          });
+
+          if (!response.ok) return null;
+
+          const data = await response.json();
+          const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+          if (!imageUrl) return null;
+
+          // Upload to storage
+          const base64Data = imageUrl.split(',')[1];
+          const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+          
+          const sanitizedName = productName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          const filename = `${sanitizedName}-ai-${index}.png`;
+          const filePath = `products/${filename}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, binaryData, {
+              contentType: 'image/png',
+              upsert: true
+            });
+          
+          if (uploadError) return null;
+          
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+          
+          return publicUrl;
+        } catch (error) {
+          console.error('Error generating AI image:', error);
+          return null;
+        }
+      });
+
+      const aiUrls = await Promise.all(aiImagePromises);
+      const validAiUrls = aiUrls.filter((url): url is string => url !== null);
+
+      if (validAiUrls.length > 0) {
+        await supabase
+          .from('product_images_cache')
+          .upsert({
+            product_name: productName,
+            search_query: productName,
+            image_urls: validAiUrls,
+          });
+
+        console.log(`Generated ${validAiUrls.length} AI images for ${productName}`);
+        return new Response(
+          JSON.stringify({ images: validAiUrls }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       return new Response(
         JSON.stringify({ images: [] }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
