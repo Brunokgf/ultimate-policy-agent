@@ -41,6 +41,8 @@ export const searchProductImages = async (productName: string, count: number = 3
 
 export const getCachedProductImages = async (productName: string, fallbackImages: string[]): Promise<string[]> => {
   try {
+    console.log('💾 getCachedProductImages: Checking cache for', productName);
+    
     // First, check if images are already cached in database
     const { data: cachedData, error: cacheError } = await supabase
       .from('product_images_cache')
@@ -49,23 +51,25 @@ export const getCachedProductImages = async (productName: string, fallbackImages
       .maybeSingle();
 
     if (!cacheError && cachedData?.image_urls && cachedData.image_urls.length > 0) {
-      console.log('Using cached images for:', productName);
+      console.log('✨ Using cached images for:', productName, 'Count:', cachedData.image_urls.length);
       return cachedData.image_urls;
     }
 
     // If not cached, search with Google API
-    console.log('Searching Google images for:', productName);
+    console.log('🔎 No cache found. Searching Google images for:', productName);
     const images = await searchProductImages(productName, 3);
     
     // If we got images, they were automatically cached by the edge function
     if (images.length > 0) {
+      console.log('✅ Got', images.length, 'images from Google API for:', productName);
       return images;
     }
 
     // Return fallback if everything fails
+    console.warn('⚠️ No images found, using fallback for:', productName);
     return fallbackImages;
   } catch (error) {
-    console.error('Error in getCachedProductImages:', error);
+    console.error('❌ Error in getCachedProductImages:', error);
     return fallbackImages;
   }
 };
