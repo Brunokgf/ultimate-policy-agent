@@ -64,6 +64,10 @@ serve(async (req) => {
 
   try {
     const { productName, productId, categoria } = await req.json();
+    console.log('=== Request received ===');
+    console.log('Product Name:', productName);
+    console.log('Product ID:', productId);
+    console.log('Categoria:', categoria || 'NOT PROVIDED');
     
     if (!productName) {
       throw new Error('Product name is required');
@@ -108,12 +112,22 @@ serve(async (req) => {
     };
     
     const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : '';
+    console.log('Category term mapped to:', categoryTerm || 'NONE');
     
-    const searchTerms = [
-      `${productName} ${categoryTerm} official product image white background`,
-      `${productName} ${categoryTerm} stock photo`,
-      `${productName} product photography`
-    ];
+    // Build more specific search terms with category
+    const searchTerms = categoryTerm 
+      ? [
+          `${productName} ${categoryTerm} official product photography`,
+          `${productName} ${categoryTerm} product image high quality`,
+          `${productName} official ${categoryTerm} white background`
+        ]
+      : [
+          `${productName} official product image`,
+          `${productName} stock photo`,
+          `${productName} product photography`
+        ];
+    
+    console.log('Search terms:', searchTerms);
     
     const allImages: string[] = [];
     
