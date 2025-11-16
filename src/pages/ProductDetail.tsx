@@ -27,7 +27,8 @@ export default function ProductDetail() {
   const { images, loading } = useProductImages(
     product?.nome || '', 
     id || '',
-    product?.descricao
+    product?.descricao,
+    product?.categoria
   );
 
   if (!product) {

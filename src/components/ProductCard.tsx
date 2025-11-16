@@ -8,11 +8,12 @@ interface ProductCardProps {
   descricao: string;
   preco: number;
   imagens: string[];
+  categoria?: string;
 }
 
-export const ProductCard = ({ id, nome, descricao, preco, imagens }: ProductCardProps) => {
+export const ProductCard = ({ id, nome, descricao, preco, imagens, categoria }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { images, loading } = useProductImages(nome, id, descricao);
+  const { images, loading } = useProductImages(nome, id, descricao, categoria);
 
   return (
     <div 
