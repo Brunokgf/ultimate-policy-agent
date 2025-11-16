@@ -5,3 +5,10 @@ verify_jwt = false
 
 [functions.generate-product-image]
 verify_jwt = false
+
+[functions.migrate-product-images]
+verify_jwt = false
+
+[functions.clear-product-images]
+verify_jwt = false
+
