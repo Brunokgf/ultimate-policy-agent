@@ -1,7 +1,1 @@
 project_id = "nvnnzovquizugwyrlkpw"
-
-[functions.google-image-search]
-verify_jwt = false
-
-[functions.generate-product-images]
-verify_jwt = false
