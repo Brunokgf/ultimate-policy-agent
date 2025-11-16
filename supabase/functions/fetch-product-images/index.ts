@@ -102,24 +102,24 @@ serve(async (req) => {
 
     // Fetch from Google API with improved specificity using category
     const categoryMap: Record<string, string> = {
-      'telefones': 'smartphone',
-      'fones': 'headphones earbuds',
-      'computadores': 'laptop notebook',
-      'impressoras': 'printer',
-      'escritorio': 'office chair desk',
-      'acessorios': 'accessory',
-      'games': 'console gaming',
-      'jogos': 'console gaming'
+      'telefones': 'smartphone only',
+      'fones': 'headphones only',
+      'computadores': 'laptop only',
+      'impressoras': 'printer only',
+      'escritorio': 'office chair',
+      'acessorios': 'tech accessory',
+      'games': 'gaming console only',
+      'jogos': 'gaming console only'
     };
     
     // Terms to exclude from search results
     const excludeTerms: Record<string, string> = {
-      'telefones': '-charger -case -cover -screen protector -cabo -carregador -capa',
-      'fones': '-case -cable -tips -cabo',
-      'computadores': '-mouse -keyboard -bag -mochila',
-      'impressoras': '-paper -toner -cartridge',
-      'games': '-controller -game -jogo -cd',
-      'jogos': '-controller -game -jogo -cd'
+      'telefones': '-charger -case -cover -screen -protector -cabo -carregador -capa -fone -headphone -acessorio',
+      'fones': '-case -cable -tips -cabo -phone -smartphone',
+      'computadores': '-mouse -keyboard -bag -mochila -acessorio',
+      'impressoras': '-paper -toner -cartridge -ink',
+      'games': '-controller -controle -game -jogo -cd -dvd',
+      'jogos': '-controller -controle -game -jogo -cd -dvd'
     };
     
     const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : '';
@@ -133,11 +133,11 @@ serve(async (req) => {
                           'Google', 'Pixel', 'Poco', 'Redmi', 'Oppo', 'Vivo'];
     const brand = brandKeywords.find(b => productName.includes(b)) || '';
     
-    // Build highly specific search terms with exclusions
+    // Build highly specific search terms combining name AND category with exclusions
     const searchTerms = [
-      `"${productName}" official product photo ${excludeTerm}`,
-      `${brand} ${productName.replace(brand, '').trim()} ${categoryTerm} stock photo ${excludeTerm}`,
-      `${productName} ${categoryTerm} press image white background ${excludeTerm}`
+      `"${productName}" ${categoryTerm} official product photo white background ${excludeTerm}`,
+      `${brand} ${productName.replace(brand, '').trim()} ${categoryTerm} official image ${excludeTerm}`,
+      `"${productName}" ${categoryTerm} stock photo ${excludeTerm}`
     ].filter(term => term.trim().length > 0);
     
     console.log('Search terms:', searchTerms);
