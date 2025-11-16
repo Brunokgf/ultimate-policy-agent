@@ -22,6 +22,7 @@ import AdminProducts from "./pages/AdminProducts";
 import MigrateImages from "./pages/MigrateImages";
 import ImportProducts from "./pages/ImportProducts";
 import TestProducts from "./pages/TestProducts";
+import AddProduct from "./pages/AddProduct";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/admin/migrar-imagens" element={<MigrateImages />} />
           <Route path="/admin/importar-produtos" element={<ImportProducts />} />
           <Route path="/test-produtos" element={<TestProducts />} />
+          <Route path="/adicionar-produto" element={<AddProduct />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
