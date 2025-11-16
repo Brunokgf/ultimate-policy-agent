@@ -13,6 +13,8 @@ import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
 import { SecurityBadge } from '@/components/SecurityBadge';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/Pagination';
 
 export default function Store() {
   const { user } = useAuth();
@@ -21,6 +23,14 @@ export default function Store() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const products = getProductsByCategory('telefones');
   const { setSearchQuery, filteredProducts } = useProductSearch(products);
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems,
+    goToPage,
+    hasNextPage,
+    hasPrevPage,
+  } = usePagination(filteredProducts, 40);
 
   if (!user) {
     return <Navigate to="/" />;
@@ -53,13 +63,23 @@ export default function Store() {
           </div>
         </div>
 
-        <div className="mb-4 text-sm sm:text-base text-muted-foreground">{filteredProducts.length} produtos</div>
+        <div className="mb-4 text-sm sm:text-base text-muted-foreground">
+          {filteredProducts.length} produtos | Página {currentPage} de {totalPages}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {filteredProducts.map((product) => (
+          {paginatedItems.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+        />
       </div>
 
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

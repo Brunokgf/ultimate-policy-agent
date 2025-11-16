@@ -13,6 +13,8 @@ import { useProductSearch } from '@/hooks/useProductSearch';
 import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
 import { SecurityBadge } from '@/components/SecurityBadge';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/Pagination';
 
 export default function Computers() {
   const { user } = useAuth();
@@ -22,6 +24,14 @@ export default function Computers() {
   const products = getProductsByCategory('computadores');
   const { setSearchQuery, filteredProducts } = useProductSearch(products);
   const totalItems = cart.reduce((sum, item) => sum + item.quantidade, 0);
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems,
+    goToPage,
+    hasNextPage,
+    hasPrevPage,
+  } = usePagination(filteredProducts, 40);
 
   if (!user) {
     return <Navigate to="/" />;
@@ -47,10 +57,17 @@ export default function Computers() {
             </Button>
           </div>
         </div>
-        <div className="mb-4 text-muted-foreground">{filteredProducts.length} produtos</div>
+        <div className="mb-4 text-muted-foreground">{filteredProducts.length} produtos | Página {currentPage} de {totalPages}</div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (<ProductCard key={product.id} {...product} />))}
+          {paginatedItems.map((product) => (<ProductCard key={product.id} {...product} />))}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+        />
       </div>
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <SecurityBadge />
