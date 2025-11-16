@@ -63,7 +63,7 @@ serve(async (req) => {
   }
 
   try {
-    const { productName, productId, categoria } = await req.json();
+    const { productName, productId, categoria, productDescription } = await req.json();
     console.log('=== Request received ===');
     console.log('Product Name:', productName);
     console.log('Product ID:', productId);
@@ -120,11 +120,30 @@ serve(async (req) => {
     };
     
     const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : 'product';
+    const description = productDescription || categoryTerm;
     
     // Generate 4 different product views with AI
-    const aiImagePromises = ['front view', 'side view', 'angled view', '3/4 view'].map(async (view, index) => {
-      const prompt = `Professional product photography of ${productName}. High quality ${categoryTerm}, ${view}, clean white background, studio lighting, 4K resolution, commercial photography style, product only, no accessories, realistic`;
-      
+    // Create highly specific and different prompts for each view
+    const viewPrompts = [
+      {
+        view: 'main',
+        prompt: `Professional e-commerce product photo: ${productName} - ${description}. Front facing view, centered on clean white background, professional studio lighting, sharp focus, 4K quality, official product photography style. Show the complete product clearly.`
+      },
+      {
+        view: 'detail',
+        prompt: `Detailed close-up product photo: ${productName} - ${description}. Show key features and details, white background, macro photography style, high resolution, emphasize product quality and craftsmanship.`
+      },
+      {
+        view: 'angle',
+        prompt: `3/4 angle product photo: ${productName} - ${description}. Dynamic perspective view showing depth and dimension, white background, commercial photography, professional lighting, showcase the product from the best angle.`
+      },
+      {
+        view: 'context',
+        prompt: `Lifestyle product photo: ${productName} - ${description}. Product in use or styled context, clean minimal background, professional commercial photography, realistic usage scenario, premium quality image.`
+      }
+    ];
+    
+    const aiImagePromises = viewPrompts.map(async ({ view, prompt }, index) => {
       try {
         console.log(`Generating ${view} for ${productName}`);
         
