@@ -10,19 +10,18 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useProductSearch } from '@/hooks/useProductSearch';
+import { getProductsByCategory } from '@/data/products';
 import { SearchBar } from '@/components/SearchBar';
 import { SecurityBadge } from '@/components/SecurityBadge';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination } from '@/components/Pagination';
-import { useProducts } from '@/hooks/useProducts';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Store() {
   const { user } = useAuth();
   const { cart } = useCart();
   const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const { products, loading } = useProducts('celulares');
+  const products = getProductsByCategory('telefones');
   const { setSearchQuery, filteredProducts } = useProductSearch(products);
   const {
     currentPage,
@@ -68,23 +67,11 @@ export default function Store() {
           {filteredProducts.length} produtos | Página {currentPage} de {totalPages}
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-80 w-full" />
-            ))}
-          </div>
-        ) : paginatedItems.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">Nenhum produto encontrado</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {paginatedItems.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {paginatedItems.map((product) => (
+            <ProductCard key={product.id} {...product} />
+          ))}
+        </div>
 
         <Pagination
           currentPage={currentPage}
