@@ -102,30 +102,33 @@ serve(async (req) => {
 
     // Fetch from Google API with improved specificity using category
     const categoryMap: Record<string, string> = {
-      'telefones': 'smartphone',
-      'fones de ouvido': 'headphones earbuds',
+      'telefones': 'smartphone celular mobile phone',
+      'fones': 'headphones earbuds fones ouvido',
       'computadores': 'laptop notebook computer',
-      'impressoras': 'printer',
-      'escritorio': 'office furniture',
-      'acessorios': 'tech accessory',
-      'jogos': 'gaming console'
+      'impressoras': 'impressora printer',
+      'escritorio': 'office furniture cadeira mesa',
+      'acessorios': 'tech accessory acessório',
+      'games': 'gaming console videogame',
+      'jogos': 'gaming console videogame'
     };
     
     const categoryTerm = categoria ? categoryMap[categoria.toLowerCase()] || categoria : '';
     console.log('Category term mapped to:', categoryTerm || 'NONE');
     
-    // Build more specific search terms with category
-    const searchTerms = categoryTerm 
-      ? [
-          `${productName} ${categoryTerm} official product photography`,
-          `${productName} ${categoryTerm} product image high quality`,
-          `${productName} official ${categoryTerm} white background`
-        ]
-      : [
-          `${productName} official product image`,
-          `${productName} stock photo`,
-          `${productName} product photography`
-        ];
+    // Extract brand from product name for more specific searches
+    const brandKeywords = ['Samsung', 'Apple', 'iPhone', 'Motorola', 'Xiaomi', 'Realme', 'OnePlus', 
+                          'Sony', 'JBL', 'Bose', 'Dell', 'Lenovo', 'HP', 'Acer', 'PlayStation', 
+                          'Xbox', 'Nintendo', 'Logitech', 'Razer', 'HyperX'];
+    const brand = brandKeywords.find(b => productName.includes(b)) || '';
+    console.log('Detected brand:', brand || 'NONE');
+    
+    // Build highly specific search terms
+    const searchTerms = [
+      `${productName} official product photo white background`,
+      `${brand} ${productName.replace(brand, '').trim()} ${categoryTerm} stock image`,
+      `${productName} ${categoryTerm} high resolution product photography`,
+      `"${productName}" official press image`
+    ].filter(term => term.trim().length > 0);
     
     console.log('Search terms:', searchTerms);
     
