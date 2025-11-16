@@ -19,8 +19,26 @@ interface MigrationStatus {
 export default function MigrateImages() {
   const navigate = useNavigate();
   const [migrating, setMigrating] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statuses, setStatuses] = useState<MigrationStatus[]>([]);
+
+  const clearStorage = async () => {
+    setClearing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('clear-product-images');
+      
+      if (error) throw error;
+      
+      toast.success(data.message || 'Storage limpo com sucesso!');
+      setStatuses([]);
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+      toast.error('Erro ao limpar storage');
+    } finally {
+      setClearing(false);
+    }
+  };
 
   const startMigration = async () => {
     setMigrating(true);
@@ -136,23 +154,43 @@ export default function MigrateImages() {
                   {allProducts.length} produtos serão processados
                 </p>
               </div>
-              <Button 
-                onClick={startMigration} 
-                disabled={migrating}
-                size="lg"
-              >
-                {migrating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Iniciar Migração
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={clearStorage} 
+                  disabled={migrating || clearing}
+                  variant="outline"
+                  size="lg"
+                >
+                  {clearing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Limpando...
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Limpar Storage
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  onClick={startMigration} 
+                  disabled={migrating || clearing}
+                  size="lg"
+                >
+                  {migrating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Iniciar Migração
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
 
             {migrating && (
