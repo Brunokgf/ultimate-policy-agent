@@ -83,21 +83,19 @@ export const useProductImages = (productName: string, productId: string, product
         setLoading(true);
         setError(null);
 
-        // Try to generate AI images
+        // Try Google API first for real product images
         const { data, error: functionError } = await supabase.functions.invoke(
-          'generate-product-image',
+          'fetch-product-images',
           {
             body: { 
               productName, 
-              productDescription: productDescription || '',
               productId 
             }
           }
         );
 
         if (functionError) {
-          console.error('AI generation failed, using local fallback:', functionError);
-          // Fallback to local images
+          console.error('Google API failed, using local fallback:', functionError);
           const localImages = getLocalImages(productId);
           setImages(localImages);
         } else if (data?.images && data.images.length > 0) {
@@ -110,7 +108,6 @@ export const useProductImages = (productName: string, productId: string, product
       } catch (err) {
         console.error('Error fetching product images:', err);
         setError(err instanceof Error ? err.message : 'Failed to load images');
-        // Fallback to local images
         const localImages = getLocalImages(productId);
         setImages(localImages);
       } finally {

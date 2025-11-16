@@ -96,38 +96,53 @@ serve(async (req) => {
       );
     }
 
-    // Fetch from Google API
-    const searchQuery = encodeURIComponent(`${productName} product high quality`);
-    const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=4`;
+    // Fetch from Google API with improved specificity
+    // Extract brand and model from product name for better search
+    const searchTerms = [
+      `${productName} official product image`,
+      `${productName} stock photo white background`,
+      `${productName} product photography`
+    ];
+    
+    const allImages: string[] = [];
+    
+    // Try multiple search queries to get the best results
+    for (const searchTerm of searchTerms) {
+      const searchQuery = encodeURIComponent(searchTerm);
+      const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=2&imgSize=large&imgType=photo`;
 
-    console.log(`Fetching images for ${productName}`);
-    console.log(`Search Engine ID: ${SEARCH_ENGINE_ID}`);
-    console.log(`API Key (first 10 chars): ${GOOGLE_API_KEY?.substring(0, 10)}...`);
-    console.log(`Search query: ${searchQuery}`);
-    console.log(`Full URL (key masked): https://www.googleapis.com/customsearch/v1?key=***&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=4`);
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Google API error ${response.status}:`, errorText);
-      throw new Error(`Google API error: ${response.status} - ${errorText}`);
+      console.log(`Searching: ${searchTerm}`);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Google API error ${response.status}:`, errorText);
+        continue; // Try next search term
+      }
+
+      const data = await response.json();
+      const googleImageUrls = data.items?.map((item: any) => item.link) || [];
+      
+      if (googleImageUrls.length > 0) {
+        allImages.push(...googleImageUrls);
+      }
     }
-
-    const data = await response.json();
-    const googleImageUrls = data.items?.map((item: any) => item.link) || [];
     
-    if (googleImageUrls.length === 0) {
+    if (allImages.length === 0) {
+      console.log('No images found, using fallback');
       return new Response(
         JSON.stringify({ images: [] }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Found ${googleImageUrls.length} images, downloading and uploading to storage...`);
+    // Remove duplicates and take best 4 images
+    const uniqueImages = [...new Set(allImages)].slice(0, 4);
+    console.log(`Found ${uniqueImages.length} unique images, downloading and uploading to storage...`);
 
     // Download and upload images to Supabase Storage
-    const uploadPromises = googleImageUrls.map((url: string, index: number) => 
+    const uploadPromises = uniqueImages.map((url: string, index: number) => 
       downloadAndUploadImage(url, productName, index, supabase)
     );
     
@@ -147,7 +162,7 @@ serve(async (req) => {
       .from('product_images_cache')
       .upsert({
         product_name: productName,
-        search_query: searchQuery,
+        search_query: productName,
         image_urls: validUrls,
       });
 
