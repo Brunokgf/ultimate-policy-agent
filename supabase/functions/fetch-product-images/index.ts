@@ -101,10 +101,14 @@ serve(async (req) => {
     const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&searchType=image&num=4`;
 
     console.log(`Fetching images for ${productName} from Google API`);
+    console.log(`API Key exists: ${!!GOOGLE_API_KEY}, Search Engine ID exists: ${!!SEARCH_ENGINE_ID}`);
+    
     const response = await fetch(url);
     
     if (!response.ok) {
-      throw new Error(`Google API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Google API error ${response.status}:`, errorText);
+      throw new Error(`Google API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
