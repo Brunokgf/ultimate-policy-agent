@@ -13,7 +13,12 @@ interface ProductCardProps {
 
 export const ProductCard = ({ id, nome, descricao, preco, imagens, categoria }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { images, loading } = useProductImages(nome, id, descricao, categoria);
+  
+  // Use images from database if available, otherwise try storage
+  const imageUrl = imagens && imagens.length > 0 ? imagens[0] : null;
+  const { images: storageImages, loading } = useProductImages(nome, id, descricao, categoria);
+  
+  const displayImage = imageUrl || storageImages[0] || '/placeholder.svg';
 
   return (
     <div 
@@ -21,11 +26,11 @@ export const ProductCard = ({ id, nome, descricao, preco, imagens, categoria }: 
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
     >
       <div className="aspect-square bg-muted rounded mb-3 overflow-hidden">
-        {loading ? (
+        {loading && !imageUrl ? (
           <Skeleton className="w-full h-full" />
         ) : (
           <img 
-            src={images[0] || '/placeholder.svg'} 
+            src={displayImage} 
             alt={nome}
             className="w-full h-full object-cover"
             onError={(e) => {
